@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>분류 추가</title>
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/app.css">
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/app-dark.css">
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/iconly.css">
+    <style>
+        .rounded_box1 {
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            color:black;
+        }
+        .rounded_box2 {
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            color:white;
+            background-color:rgb(68, 114, 196);
+            margin-top: 100px;
+        }
+        input[type="submit"]{
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            color:white;
+            background-color:rgb(68, 114, 196);
+            margin-left: 350px;
+        }
+        input[type="text"] {
+            padding: 5px;
+            text-align:center;
+            font-size: 14px;
+            width: 400px;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+        }
+    </style>
+    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
+    <script>
+        const goBack = () => {
+            history.back();
+        }
+        function categoryInsert() {
+            let name = $("#name").val();
+            if (name.trim() === "") {
+                alert("이름을 입력하세요.");
+                return false;
+            }
+            let ret = confirm(`${name}을 추가 하시겠습니까 ?`);
+            return ret;
+        }
+    </script>
+</head>
+<body>
+<form id="form" name="form" method="post" action="category_insert" onsubmit="return categoryInsert();">
+    <div class="rounded_box1">이름</div>
+    <input type="text" id="name" name="name" placeholder="추가할 이름 입력"/>
+    <br />
+    <a onclick="goBack();"><div class="rounded_box2">뒤로</div></a>
+    <input type="submit" value="추가"/>
+</form>
+</body>
+</html>

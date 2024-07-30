@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/app.css">
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/app-dark.css">
+    <link rel="stylesheet" href="/mazer/assets/compiled/css/iconly.css">
+    <style>
+        .rounded_box {
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            background-color:rgb(217, 217, 217);
+            color:black;
+        }
+        input[type="text"] {
+            padding: 5px;
+            text-align:center;
+            font-size: 14px;
+            width: 400px;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+        }
+        .text1 {
+            padding: 5px;
+            text-align:center;
+            font-size: 14px;
+            width: 400px;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            margin-left:10px;
+            background-color:rgb(217, 217, 217);
+            color:black;
+        }
+        .rounded_box2 {
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            color:white;
+            background-color:rgb(68, 114, 196);
+            margin-top: 100px;
+        }
+        .rounded_box3 {
+            width:70px;
+            padding: 5px;
+            text-align:center;
+            border-radius:10px;
+            border-color: black;
+            border-style: solid;
+            border-width : 1px;
+            display:inline-block;
+            color:white;
+            background-color:rgb(68, 114, 196);
+            margin-top: 100px;
+            margin-left:140px;
+            margin-right:140px;
+        }
+        .id_container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+    </style>
+    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
+    <script th:inline="javascript">
+        const goBack = () => {
+            history.back();
+        }
+
+        function categoryUpdate() {
+            let name = $("#name").val();
+            if (confirm(`${name}을 수정 하시겠습니까 ?`)) {
+                document.form.method = "post";
+                document.form.action = "category_update";
+                document.form.submit();
+            }
+        }
+        function categoryDelete() {
+            let id = $("#id").val();
+            let name = $("#name").val();
+            if (confirm(`${name}을 삭제 하시겠습니까 ?`)) {
+                $("#form").attr("method","get");
+                $("#form").attr("action","category_delete?id=" + id).submit();
+            }
+        }
+    </script>
+</head>
+<body>
+<form id="form" name="form">
+    <div class="id_container">
+        <div class="rounded_box">ID</div>
+        <div class="text1" th:text="${categoryDto.id}"></div>
+    </div>
+    <div class="rounded_box">이름</div>
+    <input type="text" id="name" name="name" th:value="${categoryDto.name}"/>
+</form>
+<a onclick="goBack();"><div class="rounded_box2">뒤로</div></a>
+<a onclick="categoryDelete();"><div class="rounded_box3">삭제</div></a>
+<a onclick="categoryUpdate();"><div class="rounded_box2">수정</div></a>
+</body>
+</html>
