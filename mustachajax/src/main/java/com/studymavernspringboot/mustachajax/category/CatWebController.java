@@ -16,11 +16,11 @@ public class CatWebController {
     private CategoryServiceImpl categoryService;
 
     @GetMapping("/category_list")
-    public String categoryList(Model model
-            , @RequestParam int page, @RequestParam String name) {
+    public String categoryList(Model model,
+                               @RequestParam int page, @RequestParam String searchName) {
         try {
             SearchCategoryDto searchCategoryDto = SearchCategoryDto.builder()
-                    .name(name).page(page).build();
+                    .page(page).searchName(searchName).build();
             int total = this.categoryService.countAllByNameContains(searchCategoryDto);
             searchCategoryDto.setTotal(total);
             List<ICategory> list = this.categoryService.findAllByNameContains(searchCategoryDto);
@@ -39,7 +39,7 @@ public class CatWebController {
         } catch (Exception ex) {
             log.error(ex.toString());
         }
-        return "redirect:category_list?page=1&name=";  // 브라우저 주소를 redirect 한다.
+        return "redirect:category_list?page=1&searchName=";  // 브라우저 주소를 redirect 한다.
     }
 
     @GetMapping("/category_view")    // 브라우저의 URL 주소
@@ -60,7 +60,7 @@ public class CatWebController {
         }catch (Exception ex) {
             log.error(ex.toString());
         }
-        return "redirect:category_list?page=1&name=";
+        return "redirect:category_list?page=1&searchName=";
     }
 
     @GetMapping("/category_delete")
@@ -70,7 +70,7 @@ public class CatWebController {
         }catch (Exception ex) {
             log.error(ex.toString());
         }
-        return "redirect:category_list?page=1&name=";
+        return "redirect:category_list?page=1&searchName=";
     }
 
     @GetMapping("/category_add")

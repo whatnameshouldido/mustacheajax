@@ -79,7 +79,7 @@
 
     </style>
     <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
-    <script th:inline="javascript">
+    <script>
         const goBack = () => {
             history.back();
         }
@@ -104,12 +104,8 @@
 </head>
 <body>
 <form id="form" name="form">
-    <div class="id_container">
-        <div class="rounded_box">ID</div>
-        <div class="text1" th:text="${categoryDto.id}"></div>
-    </div>
-    <div class="rounded_box">이름</div>
-    <input type="text" id="name" name="name" th:value="${categoryDto.name}"/>
+    <label for="id"></label><input type="hidden" id="id" name="id" value="{{categoryDto.id}}"/>
+    <label for="name">이름</label><input type="text" id="name" name="name" value="{{categoryDto.name}}"/>
 </form>
 <a onclick="goBack();"><div class="rounded_box2">뒤로</div></a>
 <a onclick="categoryDelete();"><div class="rounded_box3">삭제</div></a>

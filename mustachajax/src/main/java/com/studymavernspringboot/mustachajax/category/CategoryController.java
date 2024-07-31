@@ -95,19 +95,35 @@ public class CategoryController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<ICategory>> findAllByNameContains(@PathVariable String name) {
+    public ResponseEntity<List<ICategory>> findAllByNameContains(@PathVariable String searchName) {
         try {
-            if(name == null || name.isEmpty()) {
+            if(searchName == null || searchName.isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
             SearchCategoryDto searchCategoryDto = SearchCategoryDto.builder()
-                    .name(name).page(1).build();
+                    .searchName(searchName).page(1).build();
             List<ICategory> result = this.categoryService.findAllByNameContains(searchCategoryDto);
             if (result == null || result.size() <= 0) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok(result);
         } catch (Exception ex) {
+            logger.error(ex.toString());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PostMapping("/searchName")
+    public ResponseEntity<List<ICategory>> findAllByNameContains(@RequestBody SearchCategoryDto searchCategoryDto) {
+        try {
+            if ( searchCategoryDto == null ) {
+                return ResponseEntity.badRequest().build();
+            }
+            List<ICategory> result = this.categoryService.findAllByNameContains(searchCategoryDto);
+            if ( result == null ) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(result);
+        } catch ( Exception ex ) {
             logger.error(ex.toString());
             return ResponseEntity.badRequest().build();
         }

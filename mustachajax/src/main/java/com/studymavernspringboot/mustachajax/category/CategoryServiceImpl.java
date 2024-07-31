@@ -99,7 +99,9 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
             return new ArrayList<>();
         }
         dto.setOrderByWord("id DESC");
-        dto.setRowsOnePage(10);
+        if (dto.getRowsOnePage() == null) {
+            dto.setRowsOnePage(10);
+        }
         List<ICategory> list = this.getICategoryList(
                 this.categoryMybatisMapper.findAllByNameContains(dto)
         );
