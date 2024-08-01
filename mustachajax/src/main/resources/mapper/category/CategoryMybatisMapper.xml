@@ -2,25 +2,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.studymavernspringboot.mustachajax.category.CategoryMybatisMapper">
+    <!-- mapper namespace = "@Mapper로 선언된 클래스의 풀패키지.클래스 이름"-->
+
 
     <insert id="insert" parameterType="CategoryDto" useGeneratedKeys="true" keyProperty="id">
+        <!-- id="insert" CategoryMybatisMapper 클래스의 insert 메소드-->
+        <!-- parameterType="CategoryDto" insert 메소드의 매개변수 데이터 타입, 매개변수 1개만 가능-->
+        <!-- useGeneratedKeys="true" keyProperty="id컬럼명" id컬럼며의 번호를 증가해주고 리턴도 해준다.-->
         INSERT INTO category_tbl(name)
         VALUES(#{name})
 
     </insert>
 
     <update id="update" parameterType="CategoryDto">
+        <!-- id="update" CategoryMybatisMapper 클래스의 update 메소드-->
+        <!-- parameterType="CategoryDto" insert 메소드의 매개변수 데이터 타입, 매개변수 1개만 가능-->
         UPDATE category_tbl SET name = #{name}
         WHERE id = #{id}
 
     </update>
 
     <delete id="deleteById">
+        <!-- id="deleteById" CategoryMybatisMapper 클래스의 deleteById 메소드-->
+        <!-- {id}는 기본형 데이터 Long 변수명, 매개변수 ?개-->
         DELETE FROM category_tbl
         WHERE id = #{id}
     </delete>
 
     <select id="findById" resultType="CategoryDto">
+        <!-- <select id="findById" CategoryMybatisMapper 클래스의 findById 메소드-->
+        <!-- resultType="CategoryDto" findById 메소드의 return 데이터형-->
         SELECT id
              , name
         FROM category_tbl
@@ -28,6 +39,8 @@
     </select>
 
     <select id="findByName" resultType="CategoryDto">
+        <!-- <select id="findByName" CategoryMybatisMapper 클래스의 findByName 메소드-->
+        <!-- resultType="CategoryDto" findByName 메소드의 return 데이터형-->
         SELECT id
              , name
         FROM category_tbl
@@ -35,23 +48,36 @@
     </select>
 
     <select id="findAll" resultType="CategoryDto">
+        <!-- <select id="findAll" CategoryMybatisMapper 클래스의 findByAll 메소드-->
+        <!-- resultType="CategoryDto" findByAll 메소드의 return 데이터형-->
         SELECT id
              , name
         FROM category_tbl
     </select>
 
     <select id="countAllByNameContains" parameterType="SearchCategoryDto" resultType="int">
+        <!-- <select id="countAllByNameContains" CategoryMybatisMapper 클래스의 countAllByNameContains 메소드-->
+        <!-- resultType="int" countAllByNameContains 메소드의 return 데이터형 int형-->
+        <!-- parameterType="SearchCategoryDto" countAllByNameContains 매개변수의 데이터형, 매개변수 1개-->
         SELECT count(*)
         FROM category_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
+        <!-- #{searchName} : SearchCategoryDto 클래스의 멤버변수 searchName-->
     </select>
 
     <select id="findAllByNameContains" parameterType="SearchCategoryDto" resultType="CategoryDto">
+        <!-- <select id="findAllByNameContains" CategoryMybatisMapper 클래스의 findAllByNameContains 메소드-->
+        <!-- resultType="CategoryDto" findAllByNameContains 메소드의 return 데이터형 CategoryDto-->
+        <!-- parameterType="SearchCategoryDto" findAllByNameContains 매개변수의 데이터형, 매개변수 1개-->
         SELECT id
              , name
         FROM category_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+        <!-- #{searchName} : SearchCategoryDto 클래스의 멤버변수 searchName-->
+        <!-- ${orderByWord} : SearchCategoryDto 클래스의 멤버변수 orderByWord $ : 문자열 그대로 -->
+        <!-- #{rowsOnePage} : SearchCategoryDto 클래스의 멤버변수 rowsOnePage-->
+        <!-- #{firstIndex} : SearchCategoryDto 클래스의 멤버변수 firstIndex-->
     </select>
 </mapper>

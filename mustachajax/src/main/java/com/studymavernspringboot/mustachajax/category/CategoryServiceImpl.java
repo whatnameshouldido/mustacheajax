@@ -9,6 +9,7 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements ICategoryService<ICategory> {
     @Autowired
+    //SpringBoot가 CategoryMybatisMapper 데이터형으로 객체를 자동 생성한다.
     private CategoryMybatisMapper categoryMybatisMapper;
 
     @Override
@@ -45,6 +46,9 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
         List <ICategory> result = list.stream()
                 .map(entity -> (ICategory)entity)
                 .toList();
+        //stream Java 1.8 등장한 방법 : 배열/Collection 자료형을 처리할때
+        //stream을 사용하면 처리 속도도 증가하고 문법도 간결하게 만든다.
+        //배열객체/컬렉션자료형.stream() ~~~~~ 정렬, 형변환, 원소마다 똑같은 동작을 실행한다.
         return result;
     }
 
@@ -106,6 +110,7 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
         }
         dto.setOrderByWord( sOrer + " " + dto.getSortAscDsc() );
         if (dto.getRowsOnePage() == null) {
+            //한 페이지당 보여주는 행의 갯수
             dto.setRowsOnePage(10);
         }
         List<ICategory> list = this.getICategoryList(
