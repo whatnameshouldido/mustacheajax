@@ -113,16 +113,33 @@ public class CategoryController {
         }
     }
     @PostMapping("/searchName")
-    public ResponseEntity<List<ICategory>> findAllByNameContains(@RequestBody SearchCategoryDto searchCategoryDto) {
+    public ResponseEntity<SearchCategoryDto> findAllByNameContains(@RequestBody SearchCategoryDto searchCategoryDto) {
         try {
             if ( searchCategoryDto == null ) {
                 return ResponseEntity.badRequest().build();
             }
-            List<ICategory> result = this.categoryService.findAllByNameContains(searchCategoryDto);
-            if ( result == null ) {
+            int total = this.categoryService.countAllByNameContains(searchCategoryDto);
+            List<ICategory> list = this.categoryService.findAllByNameContains(searchCategoryDto);
+            if ( list == null ) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok(result);
+            searchCategoryDto.setTotal(total);
+            searchCategoryDto.setDataList(list);
+            return ResponseEntity.ok(searchCategoryDto);
+        } catch ( Exception ex ) {
+            logger.error(ex.toString());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/countName")
+    public ResponseEntity<Integer> countAllByNameContains(@RequestBody SearchCategoryDto searchCategoryDto) {
+        try {
+            if ( searchCategoryDto == null ) {
+                return ResponseEntity.badRequest().build();
+            }
+            int total = this.categoryService.countAllByNameContains(searchCategoryDto);
+            return ResponseEntity.ok(total);
         } catch ( Exception ex ) {
             logger.error(ex.toString());
             return ResponseEntity.badRequest().build();

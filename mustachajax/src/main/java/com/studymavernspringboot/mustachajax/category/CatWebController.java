@@ -22,8 +22,8 @@ public class CatWebController {
             SearchCategoryDto searchCategoryDto = SearchCategoryDto.builder()
                     .page(page).searchName(searchName).build();
             int total = this.categoryService.countAllByNameContains(searchCategoryDto);
-            searchCategoryDto.setTotal(total);
             List<ICategory> list = this.categoryService.findAllByNameContains(searchCategoryDto);
+            searchCategoryDto.setTotal(total);
             model.addAttribute("categoryList", list);
             model.addAttribute("searchCategoryDto", searchCategoryDto);
         } catch (Exception ex) {
