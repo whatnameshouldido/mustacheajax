@@ -3,13 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <title>Category Ajax CRUD</title>
-    <link rel="stylesheet" href="/mazer/assets/compiled/css/app.css">
-    <link rel="stylesheet" href="/mazer/assets/compiled/css/app-dark.css">
-    <link rel="stylesheet" href="/mazer/assets/compiled/css/iconly.css">
+    <link href="/mazer/assets/compiled/css/app.css" rel="stylesheet">
+    <link href="/mazer/assets/compiled/css/app-dark.css" rel="stylesheet">
+    <link href="/mazer/assets/compiled/css/iconly.css" rel="stylesheet">
     <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
     <style>
         .itemRow {
             width: fit-content;
+        }
+
+        .wrap {
+            /* 전체 화면의 스타일 */
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content {
+            /* 화면 안의 내용이 있는 곳의 스타일 */
+            width: 80%;
+            height: 150px;
+            margin: 20px auto;
+        }
+
+        #modal_box_add, #modal_box_view {
+            /* 모달 화면 안의 스타일, z-index: 값이 가장 크므로 화면의 상위에 표현된다.*/
+            width: 70%;
+            height: 150px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: azure;
+            display: flex;
+            flex-flow: column;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+
+        #modal_box_add button {
+            width: 100px;
+            height: 30px;
+            border: none;
+            margin-top: 10px;
+            align-self: center;
+            cursor: pointer;
+        }
+
+        .modal_bg {
+            /* 모달 화면이 나타나면 화면 안의 내용 div id="content" 를 어둡게 만든다.
+                z-index 값을 content 보다 크므로 마우스 클릭시 modal_bg 에 클릭이 된다.
+             */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-section, .form-section, .pagination-section {
+            margin-bottom: 20px;
+        }
+        .search-section input[type="text"], .form-section input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .search-section button, .form-section button {
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+        .list-section {
+            margin-bottom: 20px;
+        }
+        .list-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .list-section li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ccc;
+        }
+        .list-section .itemRow {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-section fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-section fieldset label, .form-section fieldset input {
+            margin-bottom: 10px;
+        }
+        .form-section fieldset input {
+            padding: 5px;
+            font-size: 16px;
+        }
+        .pagination-section {
+            text-align: center;
+        }
+        .pagination-section a {
+            padding: 5px 10px;
+            margin: 0 5px;
+            text-decoration: none;
+            color: white;
+            background-color: blue;
+            border-radius: 5px;
+        }
+        .pagination-section a.active {
+            background-color: darkblue;
+        }
+        .confirm-dialog {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .confirm-dialog button {
+            padding: 5px 10px;
+            font-size: 16px;
+            margin: 0 5px;
         }
     </style>
     <script>
@@ -21,30 +156,53 @@
         //$(document).ready(function(){
         //     // Jquery 는 html 문서가 로딩이 완료 되면 이 부분을 자동 최초 한번 실행한다.
         //});
-        $(function(){
+        $(function () {
             // jQuery 3.0 버전부터 실행할 기능을 정의해주세요.
             // HTML 문서 로딩이 완료되면 자동적으로 최초 한번 실행되는 jQuery 부분
             $.searchCategoryList(1);
 
-            $("#updateButton").click(function() {
+            $("#updateButton").click(function () {
                 // id="updateButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
                 $.update();
             })
 
-            $("#deleteButton").click(function() {
+            $("#deleteButton").click(function () {
                 // id="deleteButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
                 $.delete();
             })
 
-            $("#searchName").on("keyup",function(key) {
+            $("#searchName").on("keyup", function (key) {
                 // id="searchName" 요소의 키보드 업 이벤트발생 시 실행한다.
-                if( key.keyCode === 13 ) {
+                if(key.keyCode === 13) {
                     // key 매개변수 keyCode 에서 업 이벤트 발생한 키보드 키
                     $.searchCategoryList(1);
                 }
             });
+
+            $("#rowsOnePage").change(function () {
+                rowsOnePage = $("#rowsOnePage").val();
+                $.searchCategoryList(1);
+            });
+
+            $('#showAddModalButton').click(function () {
+                // id="modal_box_add" 요소와 class="modal_bg" 요소를 1000ms 동안 서서히 보여준다.
+                $('#modal_box_add').fadeIn(1000);
+                $('.modal_bg').fadeIn(1000);
+            });
+
+            $('#showViewModalButton').click(function () {
+                // id="modal_box_view" 요소와 class="modal_bg" 요소를 1000ms 동안 서서히 보여준다.
+                $('#modal_box_view').fadeIn(1000);
+                $('.modal_bg').fadeIn(1000);
+            });
+            $('.modalCloseButton').click(function () {
+                // id="modal_box_add", id="modal_box_view" 요소와 class="modal_bg" 요소를 서서히 감춘다.
+                $('#modal_box_add').fadeOut();
+                $('#modal_box_view').fadeOut();
+                $('.modal_bg').fadeOut();
+            });
         });
-        $.idAsc = function() {  // jQuery 함수 선언
+        $.idAsc = function () {  // jQuery 함수 선언
             sortColumn = "id";
             sortAscDesc = "ASC";
             $.searchCategoryList(page);
@@ -56,7 +214,7 @@
             $.searchCategoryList(page);
         }
 
-        $.nameAsc = function() {
+        $.nameAsc = function () {
             sortColumn = "name";
             sortAscDesc = "ASC";
             $.searchCategoryList(page);
@@ -68,7 +226,7 @@
             $.searchCategoryList(page);
         }
 
-        $.searchCategoryList = function(pPage) {
+        $.searchCategoryList = function (pPage) {
             page = pPage;
             $("#id").val("");   // id="id" 요소의 value 속성의 값을 "" 설정한다.
             $("#name").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
@@ -80,14 +238,14 @@
                 datatype: "JSON",   // 전송하는 데이터 방식
                 data: JSON.stringify({
                     "page": page,
-                    "searchName":searchName,
+                    "searchName": searchName,
                     "sortColumn": sortColumn,
                     "sortAscDsc": sortAscDesc,
                     "rowsOnePage": rowsOnePage,
                 }),
                 // 전송하는 실제 데이터 JSON 을 사용했다.
                 contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식
-            }).done(function(data, status, xhr){
+            }).done(function (data, status, xhr) {
                 // ajax 의 요청이 완료되서 응답이 오면 실행한다.
                 // data : 실제 응답 데이터
                 // status : http 응답 성공 일 경우 "success"
@@ -99,7 +257,7 @@
                     $.showCategoryList(data.dataList);
                     $.makePageUI(data.total, page);
                 }
-            }).fail(function(jqXHR, status, errorThrown) {
+            }).fail(function (jqXHR, status, errorThrown) {
                 // ajax 의 요청이 실패하면 실행한다.
                 // jqXHR : 부가 정보
                 // status : http 응답, 4XX, 5XX
@@ -109,7 +267,7 @@
             })
         }
 
-        $.showCategoryList = function(categoryList) {
+        $.showCategoryList = function (categoryList) {
             // categoryList 매개변수는 배열이다.
             if (categoryList == null) {
                 return;
@@ -118,7 +276,7 @@
             // id="categoryList" 요소 객체를 가져온다.
             list.children().remove();
             // list 요소의 자식을 모두 삭제한다.
-            for( let i = 0; i < categoryList.length; i++ ) {
+            for (let i = 0; i < categoryList.length; i++) {
                 let id = categoryList[i].id;
                 let name = categoryList[i].name;
                 let strLi = "<li><div onClick='$.viewCategory(" + id + ");' class='itemRow'><span>"
@@ -132,7 +290,7 @@
         }
 
         $.viewCategory = function(id) {
-            if ( id <= 0 ) {
+            if (id <= 0) {
                 return;
             }
             $.ajax({
@@ -140,34 +298,34 @@
                 type: "GET",
                 datatype: "JSON",
                 contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식
-            }).done(function(data, status, xhr){
+            }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
                     $.showCategoryInfo(data);
                 }
-            }).fail(function(jqXHR, status, errorThrown) {
+            }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("보기 실패했습니다.");
             })
         }
 
-        $.showCategoryInfo = function(item) {
+        $.showCategoryInfo = function (item) {
             if (item == null) {
                 return;
             }
-            $("#id").val(item.id);
+            $("#id2").val(item.id);
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
-            $("#name").val(item.name);
+            $("#name2").val(item.name);
         }
 
-        $.makePageUI = function(paramTotal, paramPage) {
+        $.makePageUI = function (paramTotal, paramPage) {
             // paramTotal : 전체 데이터 수
             // paramPage : 현재 페이지 번호
             let totPage = ~~((paramTotal + rowsOnePage - 1) / rowsOnePage);    // 전체 페이지 수
             let startPage = getStartPage(paramPage);
             let endPage = getEndPage(startPage, paramTotal);
-            let prev = (paramPage-1) < 1 ? 1 : paramPage-1;
-            let next = (paramPage+1) >= totPage ? totPage : paramPage+1;
+            let prev = (paramPage - 1) < 1 ? 1 : paramPage - 1;
+            let next = (paramPage + 1) >= totPage ? totPage : paramPage + 1;
             let sClass = "btn btn-success rounded-pill";
 
             $("#pageDiv").children().remove();
@@ -201,14 +359,14 @@
             // 1~56, 시작페이지 : 51,52,53,54,55,56 => end = 56
             let totPage = ~~((paramTotal + rowsOnePage - 1) / rowsOnePage);
             let tPage = startPage + 9;
-            if ( tPage < totPage ) {
+            if (tPage < totPage) {
                 return ~~(tPage);
             }
             return ~~(totPage);
         }
-        $.addInsert = function() {
+        $.addInsert = function () {
             let name = $("#name").val();
-            if ( !confirm(name + " 추가 하시겠습니까 ?") ) {
+            if (!confirm(name + " 을 추가 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
@@ -217,23 +375,25 @@
                 datatype: "JSON",
                 data: JSON.stringify({"name": name}),
                 contentType: "application/json; charset=UTF-8",
-            }).done(function(data, status, xhr){
+            }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // insert 완료시
                 $("#searchName").val("");
                 $.searchCategoryList(1);
                 $("#id").val("");
                 $("#name").val("");
-            }).fail(function(jqXHR, status, errorThrown) {
+                $(".modalCloseButton").trigger("click");
+                // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
+            }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("추가를 실패했습니다.");
-            })
+            });
         }
 
-        $.update = function() {
-            let id = $("#id").val();
-            let name = $("#name").val();
-            if ( !confirm(name + " 수정 하시겠습니까 ?") ) {
+        $.update = function () {
+            let id = $("#id2").val();
+            let name = $("#name2").val();
+            if (!confirm(name + " 수정 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
@@ -242,22 +402,24 @@
                 datatype: "JSON",
                 data: JSON.stringify({"id": id, "name": name}),
                 contentType: "application/json; charset=UTF-8",
-            }).done(function(data, status, xhr){
+            }).done (function(data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // update 성공 완료시
                 $.searchCategoryList(page);
-                $("#id").val("");
-                $("#name").val("");
-            }).fail(function(jqXHR, status, errorThrown) {
+                $("#id2").val("");
+                $("#name2").val("");
+                $(".modalCloseButton").trigger("click");
+                // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
+            }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("수정를 실패했습니다.");
             })
         }
 
-        $.delete = function() {
-            let id = $("#id").val();
-            let name = $("#name").val();
-            if ( !confirm(name + " 삭제 하시겠습니까 ?") ) {
+        $.delete = function () {
+            let id = $("#id2").val();
+            let name = $("#name2").val();
+            if (!confirm(name + " 삭제 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
@@ -265,7 +427,7 @@
                 type: "DELETE",
                 datatype: "JSON",
                 contentType: "application/json; charset=UTF-8",
-            }).done(function(data, status, xhr){
+            }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // delete 성공 완료시
                 $.doneDelete();
@@ -289,7 +451,7 @@
                 datatype: "JSON",
                 data: JSON.stringify({"searchName": searchName}),
                 contentType: "application/json; charset=UTF-8",
-            }).done(function(data, status, xhr){
+            }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // 삭제 후에 검색식과 total 로 계산해서 현재 페이지를 page-1 해야 할지 결정 한다.
                 total = data;
@@ -299,47 +461,95 @@
                 }
                 // alert("delete : total=" + total + ", page=" + page);
                 $.searchCategoryList(page);
-                $("#id").val("");
-                $("#name").val("");
-            }).fail(function(jqXHR, status, errorThrown) {
+                $("#id2").val("");
+                $("#name2").val("");
+                $(".modalCloseButton").trigger("click");
+            }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-            })
+            });
         }
     </script>
 </head>
 <body>
-<div>
-    <label for="searchName">검색이름</label><input type="text" id="searchName" name="searchName" value=""/>
-    <input type="hidden" id="page" name="page" value="" />
-    <button onclick="$.searchCategoryList(1);">검색</button>
-</div>
-<div>
-    Category Ajax List
-</div>
-<ul>
-    <li>
-        <span>id
-            <button onclick="$.idAsc();">△</button>
-            <button onclick="$.idDesc();">▽</button>
-        </span>
-        <span> : </span>
-        <span>name
-            <button onclick="$.nameAsc();">△</button>
-            <button onclick="$.nameDesc();">▽</button>
-        </span>
-    </li>
-</ul>
-<ul id="categoryList">
-</ul>
-<div>total : <span id="total"></span></div>
-<fieldset>
-    <label for="id">ID</label> <input type="text" id="id" name="id" value="" readonly />
-    <label for="name">Name</label> <input type="text" id="name" name="name" value=""/>
-</fieldset>
-<button id="addButton" onclick="$.addInsert();">추가</button>
-<button id="updateButton">수정</button>
-<button id="deleteButton">삭제</button>
-<div id="pageDiv">
+<div class="wrap">
+    <div class="container">
+        <h1>Category Management</h1>
+
+        <div class="search-section">
+            <label for="searchName">검색이름</label>
+            <input id="searchName" name="searchName" type="text" value=""/>
+            <input id="page" name="page" type="hidden" value=""/>
+            <button onclick="$.searchCategoryList(1);">검색</button>
+        </div>
+        <div>
+            Category Ajax List
+        </div>
+        <ul>
+            <li>
+                    <span>id
+                        <button onclick="$.idAsc();">△</button>
+                        <button onclick="$.idDesc();">▽</button>
+                    </span>
+                <span> : </span>
+                <span>name
+                        <button onclick="$.nameAsc();">△</button>
+                        <button onclick="$.nameDesc();">▽</button>
+                    </span>
+                <span> : </span>
+                <span>
+                        <label for="rowsOnePage">Row</label>
+                        <select id="rowsOnePage">
+                            <option value="5">5</option>
+                            <option selected value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                    </span>
+            </li>
+        </ul>
+        <ul id="categoryList">
+        </ul>
+        <div>total : <span id="total"></span></div>
+        <button id="showAddModalButton">추가</button>
+        <button id="showViewModalButton">보기</button>
+        <div id="pageDiv">
+        </div>
+    </div>
+    <div class="modal_bg"></div>
+    <div id="modal_box_add">
+        <h2>Category Add</h2>
+        <fieldset>
+            <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
+            <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
+        </fieldset>
+        <div class="row">
+            <div class="col-6">
+                <button id="addButton" onclick="$.addInsert();">추가</button>
+            </div>
+            <div class="col-6">
+                <button class="modalCloseButton">Close</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal_box_view" style="display: none">
+        <h2>Category Info</h2>
+        <fieldset>
+            <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
+            <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
+        </fieldset>
+        <div class="row">
+            <div class="col-4">
+                <button id="updateButton">수정</button>
+            </div>
+            <div class="col-4">
+                <button id="deleteButton">삭제</button>
+            </div>
+            <div class="col-4">
+                <button class="modalCloseButton">Close</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal_bg" style="display: none"></div>
 </div>
 </body>
 </html>
