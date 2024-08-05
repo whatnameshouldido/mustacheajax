@@ -55,29 +55,29 @@
         FROM category_tbl
     </select>
 
-    <select id="countAllByNameContains" parameterType="SearchCategoryDto" resultType="int">
+    <select id="countAllByNameContains" parameterType="SearchAjaxDto" resultType="int">
         <!-- <select id="countAllByNameContains" CategoryMybatisMapper 클래스의 countAllByNameContains 메소드-->
         <!-- resultType="int" countAllByNameContains 메소드의 return 데이터형 int형 -->
-        <!-- parameterType="SearchCategoryDto" countAllByNameContains 매개변수의 데이터형, 매개변수 1개 -->
+        <!-- parameterType="SearchAjaxDto" countAllByNameContains 매개변수의 데이터형, 매개변수 1개 -->
         SELECT count(*)
         FROM category_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
-        <!-- #{searchName} : SearchCategoryDto 클래스의 멤버변수 searchName -->
+        <!-- #{searchName} : SearchAjaxDto 클래스의 멤버변수 searchName -->
     </select>
 
-    <select id="findAllByNameContains" parameterType="SearchCategoryDto" resultType="CategoryDto">
+    <select id="findAllByNameContains" parameterType="SearchAjaxDto" resultType="CategoryDto">
         <!-- <select id="findAllByNameContains" CategoryMybatisMapper 클래스의 findAllByNameContains 메소드-->
         <!-- resultType="CategoryDto" findAllByNameContains 메소드의 return 데이터형 CategoryDto -->
-        <!-- parameterType="SearchCategoryDto" findAllByNameContains 매개변수의 데이터형, 매개변수 1개 -->
+        <!-- parameterType="SearchAjaxDto" findAllByNameContains 매개변수의 데이터형, 매개변수 1개 -->
         SELECT id
              , name
         FROM category_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
-        <!-- #{searchName} : SearchCategoryDto 클래스의 멤버변수 searchName -->
-        <!-- ${orderByWord} : SearchCategoryDto 클래스의 멤버변수 orderByWord $ : 문자열 그대로 -->
-        <!-- #{rowsOnePage} : SearchCategoryDto 클래스의 멤버변수 rowsOnePage -->
-        <!-- #{firstIndex} : SearchCategoryDto 클래스의 멤버변수 firstIndex -->
+        <!-- #{searchName} : SearchAjaxDto 클래스의 멤버변수 searchName -->
+        <!-- ${orderByWord} : SearchAjaxDto 클래스의 멤버변수 orderByWord $ : 문자열 그대로 -->
+        <!-- #{rowsOnePage} : SearchAjaxDto 클래스의 멤버변수 rowsOnePage -->
+        <!-- #{firstIndex} : SearchAjaxDto 클래스의 멤버변수 firstIndex -->
     </select>
 </mapper>

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/catajx") //Controller의 url 앞부분이다.
 public class CategoryAjxController {
 
-    @GetMapping("category_ajx_list")
-    //GET method로 /catajx/~~~ url 주소로 접속하도록 한다.
+    @GetMapping("/category_ajx_list")
+    // GET method로 /catajx/~~~~~~~~~ url 주소로 접속하도록 한다.
     public String category_ajx_list() {
         return "catajx/category_ajx_list";
         //화면 템플릿 엔진의 화면파일 경로/파일명

@@ -1,5 +1,6 @@
 package com.studymavernspringboot.mustachajax.category;
 
+import com.studymavernspringboot.mustachajax.SearchAjaxDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,9 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
         if (id == null || id <= 0) {
             return null;
         }
-        CategoryDto dto = this.categoryMybatisMapper.findById(id);
+        CategoryDto find = this.categoryMybatisMapper.findById(id);
         // CategoryMybatisMapper 의 쿼리 XML 파일의 <select id="findById" 문장을 실행한 결과를 리턴 받는다.
-        return dto;
+        return find;
     }
 
     @Override
@@ -104,7 +105,7 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
         return find;
     }
     @Override
-    public List<ICategory> findAllByNameContains(SearchCategoryDto dto) {
+    public List<ICategory> findAllByNameContains(SearchAjaxDto dto) {
         if (dto == null) {
 //            return List.of();
             return new ArrayList<>();
@@ -124,8 +125,8 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
     }
 
     @Override
-    public int countAllByNameContains(SearchCategoryDto searchCategoryDto) {
-        return this.categoryMybatisMapper.countAllByNameContains(searchCategoryDto);
+    public int countAllByNameContains(SearchAjaxDto searchAjaxDto) {
+        return this.categoryMybatisMapper.countAllByNameContains(searchAjaxDto);
         // CategoryMybatisMapper 의 쿼리 XML 파일의 <select id="categoryMybatisMapper" 문장을 실행한 결과를 리턴한다.
     }
 }

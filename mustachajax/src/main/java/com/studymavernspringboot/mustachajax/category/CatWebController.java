@@ -1,5 +1,6 @@
 package com.studymavernspringboot.mustachajax.category;
 
+import com.studymavernspringboot.mustachajax.SearchAjaxDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,22 +25,22 @@ public class CatWebController {
         // @RequestParam int page, @RequestParam String searchName : HTTP Request Query String
         //  : url 주소에서 ?searchName=&page=값 변수의 값을 받는다. Request Query String
         try {
-            SearchCategoryDto searchCategoryDto = SearchCategoryDto.builder()
+            SearchAjaxDto searchAjaxDto = SearchAjaxDto.builder()
                     .page(page).searchName(searchName).build();
             // SearchCategoryDto 는 select Sql 쿼리문장을 만들때 where, order by, 페이지 문장을 만들때 사용한다.
-            int total = this.categoryService.countAllByNameContains(searchCategoryDto);
+            int total = this.categoryService.countAllByNameContains(searchAjaxDto);
             // 최종 목적지인 Mybatis 쿼리를 DB 에 countAllByNameContains 실행하고 결과를 리턴 받는다.
             // 검색식의 searchName 으로 찾은 데이터 행수를 리턴받는다. 화면의 페이지 계산에 사용된다.
-            List<ICategory> list = this.categoryService.findAllByNameContains(searchCategoryDto);
+            List<ICategory> list = this.categoryService.findAllByNameContains(searchAjaxDto);            // 최종 목적지인 Mybatis 쿼리를 DB 에 실행하고 결과를 리턴 받는다.
             // 최종 목적지인 Mybatis 쿼리를 DB 에 실행하고 결과를 리턴 받는다.
             // findAllByNameContains 쿼리 문장을 만들때 orderByWord, searchName, rowsOnePage, firstIndex 값을
             // 활용하여 쿼리 문장을 만들고 실행한다.
-            searchCategoryDto.setTotal(total);
+            searchAjaxDto.setTotal(total);
             // searchCategoryDto.total 값을 저장한다.
             model.addAttribute("categoryList", list);
             // Model 객체의 속성"categoryList" 과 list 값을 추가한다.
             // 화면템플릿 "catweb/category_list.html"의 속성이름"categoryList" 에서 list 값을 받는다.)
-            model.addAttribute("searchCategoryDto", searchCategoryDto);
+            model.addAttribute("searchCategoryDto", searchAjaxDto);
             // Model 객체의 속성"searchCategoryDto" 과 searchCategoryDto 값을 추가한다.
             // 화면템플릿 "catweb/category_list.html"의 속성이름"searchCategoryDto" 에서 searchCategoryDto 값을 받는다.)
         } catch (Exception ex) {
@@ -48,6 +49,22 @@ public class CatWebController {
         return "catweb/category_list";
         // 화면 템플릿 엔진의 화면파일 경로/파일명
         // => resources/templates/catweb/category_list.(html/mustache/jsp/..)
+    }
+
+    @GetMapping("/category_add")
+    // GET method로 /catweb/category_add url 주소로 요청을 받도록 한다.
+    public String categoryAdd(Model model) {
+        // String : "템플릿 화면파일 경로", "redirect:url 주소"
+        // Model model : MVC 프레임워크에서는 View 와 Controller 와 Model 을 분리해서 사용한다.
+        //  View 와 Model 의 데이터를 연결하는 역할을 한다. 구식의 ModelAndView
+        try {
+
+        } catch (Exception ex) {
+            log.error(ex.toString()); // error 응답
+        }
+        return "catweb/category_add";
+        // 화면 템플릿 엔진의 화면파일 경로/파일명
+        // => resources/templates/catweb/category_add.(html/mustache/jsp/..)
     }
 
     @PostMapping("/category_insert")
@@ -119,15 +136,5 @@ public class CatWebController {
         return "redirect:/catweb/category_list?page=1&searchName=";
         // 화면 템플릿 엔진의 화면파일 경로/파일명
         // => redirect : 브라우저의 절대주소(/catweb/category_list?page=1&searchName=)를 리다이렉트 한다. 절대주소를 사용하지 말자.
-    }
-
-    @GetMapping("/category_add")
-    public String categoryAdd(Model model) {
-        try {
-
-        } catch (Exception ex) {
-            log.error(ex.toString());
-        }
-        return "catweb/category_add";
     }
 }
