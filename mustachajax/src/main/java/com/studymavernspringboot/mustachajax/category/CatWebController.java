@@ -40,8 +40,8 @@ public class CatWebController {
             model.addAttribute("categoryList", list);
             // Model 객체의 속성"categoryList" 과 list 값을 추가한다.
             // 화면템플릿 "catweb/category_list.html"의 속성이름"categoryList" 에서 list 값을 받는다.)
-            model.addAttribute("searchCategoryDto", searchAjaxDto);
-            // Model 객체의 속성"searchCategoryDto" 과 searchCategoryDto 값을 추가한다.
+            model.addAttribute("searchAjaxDto", searchAjaxDto);
+            // Model 객체의 속성"searchAjaxDto" 과 searchAjaxDto 값을 추가한다.
             // 화면템플릿 "catweb/category_list.html"의 속성이름"searchCategoryDto" 에서 searchCategoryDto 값을 받는다.)
         } catch (Exception ex) {
             log.error(ex.toString()); // error 응답

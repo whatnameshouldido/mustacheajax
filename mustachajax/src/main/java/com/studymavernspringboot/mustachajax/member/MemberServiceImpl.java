@@ -1,13 +1,16 @@
 package com.studymavernspringboot.mustachajax.member;
 
 import com.studymavernspringboot.mustachajax.SearchAjaxDto;
+import com.studymavernspringboot.mustachajax.security.dto.LoginRequest;
 import com.studymavernspringboot.mustachajax.security.dto.SignUpRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class MemberServiceImpl implements IMemberService {
     @Autowired
@@ -29,6 +32,15 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public MemberDto insert(MemberDto dto) throws Exception {
+        return null;
+    }
+
+    @Override
+    public IMember login(LoginRequest dto) {
+        IMember find = this.memberMybatisMapper.findByLoginId(dto.getLoginId());
+        if ( encoder.matches(dto.getPassword(), find.getPassword()) ) {
+            return find;
+        }
         return null;
     }
 
