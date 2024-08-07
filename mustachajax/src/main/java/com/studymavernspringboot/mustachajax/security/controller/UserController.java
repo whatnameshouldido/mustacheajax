@@ -1,7 +1,7 @@
 package com.studymavernspringboot.mustachajax.security.controller;
 
-import com.softagape.mustacheajax.member.IMember;
-import com.softagape.mustacheajax.member.IMemberService;
+import com.studymavernspringboot.mustachajax.member.IMember;
+import com.studymavernspringboot.mustachajax.member.IMemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
