@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
-@RequestMapping("")
+@RequestMapping("/")
 public class LoginCookieController {
     @Autowired
     private IMemberService memberService;
@@ -78,11 +78,19 @@ public class LoginCookieController {
         return "user/info";
     }
 
-    @GetMapping("/signout")
+    @GetMapping("/logout")
     private String logout(HttpServletResponse response) {
-//        Cookie cookie = new Cookie("loginId", null);
-//        cookie.setMaxAge(0);
-//        response.addCookie(cookie);
+        Cookie cookie = new Cookie("loginId", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "login/logout";
+    }
+
+    @GetMapping("/signout")
+    private String signout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("loginId", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return "login/logout";
     }
 }

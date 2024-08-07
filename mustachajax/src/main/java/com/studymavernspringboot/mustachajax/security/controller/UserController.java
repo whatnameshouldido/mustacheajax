@@ -18,7 +18,7 @@ public class UserController {
     private IMemberService memberService;
 
     @GetMapping("/info")
-    private String showInfo(Model model, @CookieValue(name = "loginId") String loginId) {
+    private String showInfo(Model model, @CookieValue String loginId) {
         IMember loginUser = memberService.findByLoginId(loginId);
         model.addAttribute("loginUser", loginUser);
         return "user/info";
