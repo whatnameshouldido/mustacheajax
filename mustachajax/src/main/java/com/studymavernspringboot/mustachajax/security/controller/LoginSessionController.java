@@ -24,11 +24,6 @@ public class LoginSessionController {
     @Autowired
     private IMemberService memberService;
 
-    @GetMapping("")
-    private String home() {
-        return "login/home";
-    }
-
     @GetMapping("/signup")
     private String viewSignUp() {
         return "login/signup";
@@ -53,7 +48,7 @@ public class LoginSessionController {
     }
 
     @PostMapping("/signin")
-    private String signin(@ModelAttribute LoginRequest dto
+    private String signin(Model model, @ModelAttribute LoginRequest dto
         , HttpServletRequest request) {
         try {
             if (dto == null) {

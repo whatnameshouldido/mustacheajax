@@ -19,11 +19,6 @@ public class LoginCookieController {
     @Autowired
     private IMemberService memberService;
 
-    @GetMapping("")
-    private String home() {
-        return "login/home";
-    }
-
     @GetMapping("/signup")
     private String viewSignUp() {
         return "login/signup";
@@ -48,7 +43,7 @@ public class LoginCookieController {
     }
 
     @PostMapping("/signin")
-    private String signin(@ModelAttribute LoginRequest dto
+    private String signin(Model model, @ModelAttribute LoginRequest dto
         , HttpServletResponse response) {
         try {
             if (dto == null) {
@@ -63,6 +58,8 @@ public class LoginCookieController {
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
+
+            model.addAttribute("loginUser", loginUser);
         } catch (Exception ex) {
             log.error(ex.toString());
         }

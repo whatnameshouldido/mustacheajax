@@ -20,20 +20,19 @@ public class AdminController {
     private IMemberService memberService;
 
     @GetMapping("/infoCookie")
-    private String showInfoCookie(Model model, @CookieValue(name="loginId", required = false) String loginId) {
-        if ( loginId == null ) {
+    private String showInfoSession(Model model) {
+        IMember loginUser = (IMember)model.getAttribute("loginUser");
+        if ( loginUser == null ) {
             return "redirect:/";
         }
-        IMember loginUser = memberService.findByLoginId(loginId);
         if ( !loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
             return "redirect:/";
         }
-        model.addAttribute("loginUser", loginUser);
         return "admin/info";
     }
 
     @GetMapping("/infoSession")
-    private String showInfoSession(Model model, @SessionAttribute(name="loginId", required = false) String loginId) {
+    private String showInfoSession(Model model, @SessionAttribute(name = "loginId", required = false) String loginId) {
         if ( loginId == null ) {
             return "redirect:/";
         }
