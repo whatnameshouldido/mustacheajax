@@ -26,7 +26,24 @@
             margin: 20px auto;
         }
 
-        #modal_box_add, #modal_box_view {
+        #modal_box_add {
+            /* 모달 화면 안의 스타일, z-index: 값이 가장 크므로 화면의 상위에 표현된다.*/
+            width: 70%;
+            height: 150px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: azure;
+            display: flex;
+            flex-flow: column;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+
+        #modal_box_view {
             /* 모달 화면 안의 스타일, z-index: 값이 가장 크므로 화면의 상위에 표현된다.*/
             width: 70%;
             height: 150px;
@@ -153,8 +170,8 @@
         let sortColumn = "id";
         let sortAscDesc = "DESC";
         let rowsOnePage = 10;
-        //$(document).ready(function(){
-        //     // Jquery 는 html 문서가 로딩이 완료 되면 이 부분을 자동 최초 한번 실행한다.
+        //$(document).ready(function(){ // jQuery 1.xx
+        //    // Jquery 는 html 문서가 로딩이 완료 되면 이 부분을 자동 최초 한번 실행한다.
         //});
         $(function () {
             // jQuery 3.0 버전부터 실행할 기능을 정의해주세요.
@@ -264,7 +281,7 @@
                 // errorThrown : error 를 던진 곳의 정보
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("검색을 실패했습니다.");
-            })
+            });
         }
 
         $.showCategoryList = function (categoryList) {
@@ -306,7 +323,7 @@
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("보기 실패했습니다.");
-            })
+            });
         }
 
         $.showCategoryInfo = function (item) {
@@ -413,7 +430,7 @@
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("수정를 실패했습니다.");
-            })
+            });
         }
 
         $.delete = function () {
@@ -440,7 +457,7 @@
             }).fail(function(jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("삭제를 실패했습니다.");
-            })
+            });
         }
         $.doneDelete = function() {
             // searchName 으로 검색한 데이터 전체 행 수를 가져온다.
