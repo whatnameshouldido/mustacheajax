@@ -55,8 +55,8 @@ public class LoginCookieController {
             }
             Cookie cookie = new Cookie("loginId", loginUser.getLoginId());
             cookie.setMaxAge(60 * 30);
-            cookie.setPath("/");    // 쿠키 사용 가능한 url 주소를 root 로 설정
-            cookie.setHttpOnly(true);   // 쿠키를 client 에서 수정 못하도록 설정
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
             model.addAttribute("loginUser", loginUser);
@@ -68,7 +68,6 @@ public class LoginCookieController {
 
     @GetMapping("/logout")
     private String logout(HttpServletResponse response) {
-        // /logout 은 스프링 security 에서 처리하므로 이쪽 url 로 오지 않음
         return "login/signout";
     }
 }

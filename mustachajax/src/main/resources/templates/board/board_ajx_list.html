@@ -81,88 +81,6 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 99;
         }
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .search-section, .form-section, .pagination-section {
-            margin-bottom: 20px;
-        }
-        .search-section input[type="text"], .form-section input[type="text"] {
-            padding: 5px;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        .search-section button, .form-section button {
-            padding: 5px 10px;
-            font-size: 16px;
-        }
-        .list-section {
-            margin-bottom: 20px;
-        }
-        .list-section ul {
-            list-style: none;
-            padding: 0;
-        }
-        .list-section li {
-            padding: 5px 0;
-            border-bottom: 1px solid #ccc;
-        }
-        .list-section .itemRow {
-            display: flex;
-            justify-content: space-between;
-        }
-        .form-section fieldset {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .form-section fieldset label, .form-section fieldset input {
-            margin-bottom: 10px;
-        }
-        .form-section fieldset input {
-            padding: 5px;
-            font-size: 16px;
-        }
-        .pagination-section {
-            text-align: center;
-        }
-        .pagination-section a {
-            padding: 5px 10px;
-            margin: 0 5px;
-            text-decoration: none;
-            color: white;
-            background-color: blue;
-            border-radius: 5px;
-        }
-        .pagination-section a.active {
-            background-color: darkblue;
-        }
-        .confirm-dialog {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .confirm-dialog button {
-            padding: 5px 10px;
-            font-size: 16px;
-            margin: 0 5px;
-        }
     </style>
     <script>
         let page = 0;
@@ -185,7 +103,7 @@
 
             $("#deleteButton").click(function () {
                 // id="deleteButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
-                $.delete();
+                $.deleteFlag();
             })
 
             $("#searchName").on("keyup", function (key) {
@@ -247,10 +165,11 @@
             page = pPage;
             $("#id").val("");   // id="id" 요소의 value 속성의 값을 "" 설정한다.
             $("#name").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
+            $("#content").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
             let searchName = $("#searchName").val();
             // id="searchName" 요소의 value 속성의 값을 가져온다.
             $.ajax({    // jQuery Ajax 비동기 서버와 통신
-                url: "/api/V1/board/searchName",  // 서버 주소
+                url: "/api/v1/board/searchName",  // 서버 주소
                 type: "POST",   // method 방식
                 datatype: "JSON",   // 전송하는 데이터 방식
                 data: JSON.stringify({
@@ -296,6 +215,7 @@
             for (let i = 0; i < boardList.length; i++) {
                 let id = boardList[i].id;
                 let name = boardList[i].name;
+                let content = boardList[i].content;
                 let strLi = "<li><div onClick='$.viewBoard(" + id + ");' class='itemRow'><span>"
                     + id + "</span><span> : </span><span>"
                     + name + "</span></div></li>";
@@ -311,7 +231,7 @@
                 return;
             }
             $.ajax({
-                url: "/api/V1/board/" + id,
+                url: "/api/v1/board/" + id,
                 type: "GET",
                 datatype: "JSON",
                 contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식
@@ -333,6 +253,7 @@
             $("#id2").val(item.id);
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
             $("#name2").val(item.name);
+            $("#content2").val(item.content);
         }
 
         $.makePageUI = function (paramTotal, paramPage) {
@@ -383,14 +304,15 @@
         }
         $.addInsert = function () {
             let name = $("#name").val();
-            if (!confirm(name + " 을 추가 하시겠습니까 ?")) {
+            let content = $("#content").val();
+            if (!confirm(name + " 추가 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
-                url: "/api/V1/board",
+                url: "/api/v1/board",
                 type: "POST",
                 datatype: "JSON",
-                data: JSON.stringify({"name": name}),
+                data: JSON.stringify({"name": name, "content": content}),
                 contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
@@ -399,6 +321,7 @@
                 $.searchBoardList(1);
                 $("#id").val("");
                 $("#name").val("");
+                $("#content").val("");
                 $(".modalCloseButton").trigger("click");
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
@@ -410,14 +333,15 @@
         $.update = function () {
             let id = $("#id2").val();
             let name = $("#name2").val();
+            let content = $("#content2").val();
             if (!confirm(name + " 수정 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
-                url: "/api/V1/board/" + id,
+                url: "/api/v1/board",
                 type: "PATCH",
                 datatype: "JSON",
-                data: JSON.stringify({"id": id, "name": name}),
+                data: JSON.stringify({"id": id, "name": name, "content": content}),
                 contentType: "application/json; charset=UTF-8",
             }).done (function(data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
@@ -425,6 +349,7 @@
                 $.searchBoardList(page);
                 $("#id2").val("");
                 $("#name2").val("");
+                $("#content2").val("");
                 $(".modalCloseButton").trigger("click");
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
@@ -433,16 +358,17 @@
             });
         }
 
-        $.delete = function () {
+        $.deleteFlag = function () {
             let id = $("#id2").val();
             let name = $("#name2").val();
             if (!confirm(name + " 삭제 하시겠습니까 ?")) {
                 return;
             }
             $.ajax({
-                url: "/api/V1/board/" + id,
+                url: "/api/v1/board/delflag",
                 type: "DELETE",
                 datatype: "JSON",
+                data: JSON.stringify({"id": id, "name": name}),
                 contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
@@ -463,7 +389,7 @@
             // searchName 으로 검색한 데이터 전체 행 수를 가져온다.
             let searchName = $("#searchName").val();
             $.ajax({
-                url: "/api/V1/board/countName",
+                url: "/api/v1/board/countName",
                 type: "POST",
                 datatype: "JSON",
                 data: JSON.stringify({"searchName": searchName}),
@@ -480,6 +406,7 @@
                 $.searchBoardList(page);
                 $("#id2").val("");
                 $("#name2").val("");
+                $("#content2").val("");
                 $(".modalCloseButton").trigger("click");
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -488,21 +415,19 @@
     </script>
 </head>
 <body>
-<div class="wrap">
-    <div class="container">
-        <h1>Board Management</h1>
-
-        <div class="search-section">
-            <label for="searchName">검색이름</label>
-            <input id="searchName" name="searchName" type="text" value=""/>
-            <input id="page" name="page" type="hidden" value=""/>
-            <button onclick="$.searchBoardList(1);">검색</button>
-        </div>
-        <div>
-            게시판 목록
-        </div>
-        <ul>
-            <li>
+<div>
+    <div class="wrap">
+        <div class="content">
+            <div>
+                <label for="searchName">검색이름</label><input id="searchName" name="searchName" type="text" value=""/>
+                <input id="page" name="page" type="hidden" value=""/>
+                <button onclick="$.searchBoardList(1);">검색</button>
+            </div>
+            <div>
+                게시판 목록
+            </div>
+            <ul>
+                <li>
                     <span>id
                         <button onclick="$.idAsc();">△</button>
                         <button onclick="$.idDesc();">▽</button>
@@ -522,51 +447,53 @@
                             <option value="30">30</option>
                         </select>
                     </span>
-            </li>
-        </ul>
-        <ul id="boardList">
-        </ul>
-        <div>total : <span id="total"></span></div>
-        <button id="showAddModalButton">추가</button>
-        <button id="showViewModalButton">보기</button>
-        <div id="pageDiv">
-        </div>
-    </div>
-    <div class="modal_bg"></div>
-    <div id="modal_box_add">
-        <h2>Board Add</h2>
-        <fieldset>
-            <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
-            <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
-        </fieldset>
-        <div class="row">
-            <div class="col-6">
-                <button id="addButton" onclick="$.addInsert();">추가</button>
-            </div>
-            <div class="col-6">
-                <button class="modalCloseButton">Close</button>
+                </li>
+            </ul>
+            <ul id="boardList">
+            </ul>
+            <div>total : <span id="total"></span></div>
+            <button id="showAddModalButton">추가</button>
+            <button id="showViewModalButton">보기</button>
+            <div id="pageDiv">
             </div>
         </div>
-    </div>
-    <div id="modal_box_view" style="display: none">
-        <h2>Board Info</h2>
-        <fieldset>
-            <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
-            <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
-        </fieldset>
-        <div class="row">
-            <div class="col-4">
-                <button id="updateButton">수정</button>
-            </div>
-            <div class="col-4">
-                <button id="deleteButton">삭제</button>
-            </div>
-            <div class="col-4">
-                <button class="modalCloseButton">Close</button>
+        <div id="modal_box_add" style="display: none">
+            <h2>Board Add</h2>
+            <fieldset>
+                <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
+                <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
+                <label for="content">content</label> <textarea id="content" name="content"></textarea>
+            </fieldset>
+            <div class="row">
+                <div class="col-6">
+                    <button id="addButton" onclick="$.addInsert();">추가</button>
+                </div>
+                <div class="col-6">
+                    <button class="modalCloseButton">Close</button>
+                </div>
             </div>
         </div>
+        <div id="modal_box_view" style="display: none">
+            <h2>Board Info</h2>
+            <fieldset>
+                <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
+                <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
+                <label for="content2">Name</label> <textarea id="content2" name="content2"></textarea>
+            </fieldset>
+            <div class="row">
+                <div class="col-4">
+                    <button id="updateButton">수정</button>
+                </div>
+                <div class="col-4">
+                    <button id="deleteButton">삭제</button>
+                </div>
+                <div class="col-4">
+                    <button class="modalCloseButton">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal_bg" style="display: none"></div>
     </div>
-    <div class="modal_bg" style="display: none"></div>
 </div>
 </body>
 </html>
