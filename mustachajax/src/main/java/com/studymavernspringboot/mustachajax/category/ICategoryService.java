@@ -1,7 +1,7 @@
 package com.studymavernspringboot.mustachajax.category;
 
 import com.studymavernspringboot.mustachajax.ICommonService;
-import com.studymavernspringboot.mustachajax.SearchAjaxDto;
+import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 
 import java.util.List;
 

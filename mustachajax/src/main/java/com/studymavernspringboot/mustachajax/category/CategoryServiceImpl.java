@@ -1,6 +1,6 @@
 package com.studymavernspringboot.mustachajax.category;
 
-import com.studymavernspringboot.mustachajax.SearchAjaxDto;
+import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

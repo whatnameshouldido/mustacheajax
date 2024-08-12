@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.softagape.mustacheajax.board.IBoardMybatisMapper">
+
+    <insert id="insert" parameterType="BoardDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            board_tbl (
+                 name
+               , content
+               , view_qty
+               , like_qty
+               , create_dt
+               , create_id
+               , del_flag
+        )
+        VALUES (
+                #{name}
+               , #{content}
+               , #{viewQty}
+               , #{likeQty}
+               , #{createDt}
+               , #{createId}
+               , 'N'
+        )
+    </insert>
+
+    <update id="update" parameterType="BoardDto">
+        UPDATE board_tbl
+            SET name = #{name}
+            , content = #{content}
+            , view_qty = #{viewQty}
+            , like_qty = #{likeQty}
+            , update_dt = #{updateDt}
+            , update_id = #{updateId}
+        WHERE id = #{id}
+    </update>
+
+    <update id="deleteFlag" parameterType="BoardDto">
+        UPDATE board_tbl
+        SET delete_dt = #{deleteDt}
+          , delete_id = #{deleteId}
+          , del_flag = 'Y'
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM board_tbl
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findById" resultType="BoardDto">
+        SELECT id
+            , name
+            , content
+            , view_qty
+            , like_qty
+            , create_dt
+            , create_id
+            , update_dt
+            , update_id
+            , delete_dt
+            , delete_id
+            , del_flag
+        FROM board_tbl
+        WHERE id = #{id}
+        AND del_flag = 'N'
+    </select>
+
+    <select id="countByCreateId" parameterType="SearchAjaxDto" resultType="int">
+        SELECT count(*)
+        FROM board_tbl
+        WHERE create_id = #{searchName}
+          AND del_flag = 'N'
+    </select>
+
+    <select id="findPagesByCreateId" parameterType="SearchAjaxDto" resultType="BoardDto">
+        SELECT id
+             , name
+             , content
+             , view_qty
+             , like_qty
+             , create_dt
+             , create_id
+             , update_dt
+             , update_id
+             , delete_dt
+             , delete_id
+             , del_flag
+        FROM board_tbl
+        WHERE create_id = #{searchName}
+            AND del_flag = 'N'
+        ORDER BY ${orderByWord}
+            LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+    </select>
+
+    <select id="countByNameContains" parameterType="SearchAjaxDto" resultType="int">
+        SELECT count(*)
+        FROM board_tbl
+        WHERE name like CONCAT('%',#{searchName},'%')
+          AND del_flag = 'N'
+    </select>
+
+    <select id="findPagesByNameContains" parameterType="SearchAjaxDto" resultType="BoardDto">
+        SELECT id
+             , name
+             , content
+             , view_qty
+             , like_qty
+             , create_dt
+             , create_id
+             , update_dt
+             , update_id
+             , delete_dt
+             , delete_id
+             , del_flag
+        FROM board_tbl
+        WHERE name like CONCAT('%',#{searchName},'%')
+          AND del_flag = 'N'
+        ORDER BY ${orderByWord}
+        LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+    </select>
+
+    <select id="countByContentContains" parameterType="SearchAjaxDto" resultType="int">
+        SELECT count(*)
+        FROM board_tbl
+        WHERE content like CONCAT('%',#{searchName},'%')
+          AND del_flag = 'N'
+    </select>
+
+    <select id="findPagesByContentContains" parameterType="SearchAjaxDto" resultType="BoardDto">
+        SELECT id
+             , name
+             , content
+             , view_qty
+             , like_qty
+             , create_dt
+             , create_id
+             , update_dt
+             , update_id
+             , delete_dt
+             , delete_id
+             , del_flag
+        FROM board_tbl
+        WHERE content like CONCAT('%',#{searchName},'%')
+          AND del_flag = 'N'
+        ORDER BY ${orderByWord}
+            LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+    </select>
+</mapper>

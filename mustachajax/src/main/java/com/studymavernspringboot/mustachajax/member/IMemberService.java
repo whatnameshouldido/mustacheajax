@@ -1,7 +1,7 @@
 package com.studymavernspringboot.mustachajax.member;
 
 import com.studymavernspringboot.mustachajax.ICommonService;
-import com.studymavernspringboot.mustachajax.SearchAjaxDto;
+import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import com.studymavernspringboot.mustachajax.security.dto.LoginRequest;
 import com.studymavernspringboot.mustachajax.security.dto.SignUpRequest;
 

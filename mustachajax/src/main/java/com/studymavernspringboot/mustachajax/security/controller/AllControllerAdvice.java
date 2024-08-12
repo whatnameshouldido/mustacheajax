@@ -22,6 +22,7 @@ public class AllControllerAdvice {
             , "/catweb"
             , "/admin"
             , "/user"
+            , "/board"
     };
 
 

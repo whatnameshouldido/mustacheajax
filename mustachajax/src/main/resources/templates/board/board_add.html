@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판 추가</title>
+    <script>
+        function checkPost() {
+            let f = document.forms[0];
+            if ( f.getElementById("name").value === '' ) {
+                alert("제목을 입력 해주세요.");
+                f.getElementById("name").focus();
+                return false;
+            } else if ( f.getElementById("content").value === '' ) {
+                alert("내용을 입력 해주세요.");
+                f.getElementById("content").focus();
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<div>
+    <form name="boardForm" method="post" action="./insert" onsubmit="return checkPost();">
+        <label for="name">제목 : </label>
+        <input type="text" id="name" name="name" />
+        <label for="content">내용 : </label>
+        <textarea id="content" name="content"></textarea>
+        <input type="submit" value="게시글등록" />
+    </form>
+    <button onclick="history.back();">뒤로가기</button>
+</div>
+</body>
+</html>

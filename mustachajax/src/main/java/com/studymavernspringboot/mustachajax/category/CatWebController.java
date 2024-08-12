@@ -1,6 +1,6 @@
 package com.studymavernspringboot.mustachajax.category;
 
-import com.studymavernspringboot.mustachajax.SearchAjaxDto;
+import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.MemberRole;
 import lombok.extern.slf4j.Slf4j;

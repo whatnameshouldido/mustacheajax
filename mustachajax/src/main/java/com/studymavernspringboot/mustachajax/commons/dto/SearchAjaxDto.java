@@ -1,4 +1,4 @@
-package com.studymavernspringboot.mustachajax;
+package com.studymavernspringboot.mustachajax.commons.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
