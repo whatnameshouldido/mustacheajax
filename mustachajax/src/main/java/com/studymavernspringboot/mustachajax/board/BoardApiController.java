@@ -110,7 +110,10 @@ public class BoardApiController {
             if (id == null || id <= 0) {
                 return ResponseEntity.badRequest().build(); // error 응답
             }
+            this.boardService.addViewQty(id);
+
             IBoard result = this.boardService.findById(id);
+
             if(result == null) {
                 return ResponseEntity.notFound().build(); // error 응답
             }
@@ -163,6 +166,20 @@ public class BoardApiController {
             int total = this.boardService.countAllByNameContains(searchAjaxDto);
             return ResponseEntity.ok(total);
             // 200 OK 와 result 데이터를 응답한다.
+        } catch ( Exception ex ) {
+            log.error(ex.toString());
+            return ResponseEntity.badRequest().build(); // error 응답
+        }
+    }
+
+    @GetMapping("/like/{id}")
+    public ResponseEntity<String> addLikeQty(@PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return ResponseEntity.badRequest().build(); // error 응답
+            }
+            this.boardService.addLikeQty(id);
+            return ResponseEntity.ok("OK");
         } catch ( Exception ex ) {
             log.error(ex.toString());
             return ResponseEntity.badRequest().build(); // error 응답

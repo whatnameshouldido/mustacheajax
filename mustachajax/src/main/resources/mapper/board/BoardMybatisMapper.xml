@@ -57,6 +57,7 @@
             , del_flag
         FROM board_tbl
         WHERE id = #{id}
+          AND del_flag = 'N'
     </select>
 
     <update id="addViewQty">
@@ -92,6 +93,7 @@
              , del_flag
         FROM board_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
+        AND del_flag = 'N'
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
     </select>
