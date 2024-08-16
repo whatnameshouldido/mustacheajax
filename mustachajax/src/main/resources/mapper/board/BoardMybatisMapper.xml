@@ -64,18 +64,28 @@
         UPDATE board_tbl
         SET view_qty = view_qty + 1
         WHERE id = #{id}
+          AND del_flag = 'N'
     </update>
 
     <update id="addLikeQty">
         UPDATE board_tbl
         SET like_qty = like_qty + 1
         WHERE id = #{id}
+          AND del_flag = 'N'
+    </update>
+
+    <update id="subLikeQty">
+        UPDATE board_tbl
+        SET like_qty = like_qty - 1
+        WHERE id = #{id}
+          AND del_flag = 'N'
     </update>
 
     <select id="countAllByNameContains" parameterType="SearchAjaxDto" resultType="int">
         SELECT count(*)
         FROM board_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
+          AND del_flag = 'N'
     </select>
 
     <select id="findAllByNameContains" parameterType="SearchAjaxDto" resultType="BoardDto">

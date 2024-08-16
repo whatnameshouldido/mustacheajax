@@ -125,17 +125,16 @@
             $("#updateButton").click(function () {
                 // id="updateButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
                 $.update();
-            })
-
-            $("#likeButton").click(function () {
-                // id="updateButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
-                $.likeBoard();
-            })
+            });
 
             $("#deleteButton").click(function () {
                 // id="deleteButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
                 $.deleteFlag();
-            })
+            });
+
+            $("#likeButton").click(function () {
+                $.likeBoard();
+            });
 
             $("#searchName").on("keyup", function (key) {
                 // id="searchName" 요소의 키보드 업 이벤트발생 시 실행한다.
@@ -188,6 +187,30 @@
 
         $.nameDesc = () => {
             sortColumn = "name";
+            sortAscDesc = "DESC";
+            $.searchBoardList(page);
+        }
+
+        $.createDtAsc = function () {
+            sortColumn = "create_dt";
+            sortAscDesc = "ASC";
+            $.searchBoardList(page);
+        }
+
+        $.createDtDesc = () => {
+            sortColumn = "create_dt";
+            sortAscDesc = "DESC";
+            $.searchBoardList(page);
+        }
+
+        $.createIdAsc = function () {
+            sortColumn = "create_id";
+            sortAscDesc = "ASC";
+            $.searchBoardList(page);
+        }
+
+        $.createIdDesc = () => {
+            sortColumn = "create_id";
             sortAscDesc = "DESC";
             $.searchBoardList(page);
         }
@@ -250,7 +273,7 @@
                 let createDt = boardList[i].createDt;
                 let createId = boardList[i].createId;
                 let viewQty = boardList[i].viewQty;
-                let strLi = "<li><div onClick='$.viewBoard(" + id + ");' class='itemRow'>"
+                let strLi = "<li><div onClick='$.viewBoard(" + id + ");' class='row'>"
                     + "<span class='col-md-8 d-flex justify-content-start'>" + name + "</span>"
                     + "<span class='col-md-2 d-flex justify-content-center'>" + createDt + "</span>"
                     + "<span class='col-md-1 d-flex justify-content-start'>" + createId + "</span>"
@@ -291,6 +314,14 @@
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
             $("#name2").val(item.name);
             $("#content2").val(item.content);
+            $("#viewQty2").val(item.viewQty);
+            $("#likeQty2").text(item.likeQty);
+            let count = item.delFlag;
+            if ( count === "0" ) {
+                $("#heartIcon").attr("src", "/svg/heartOff.svg");
+            } else {
+                $("#heartIcon").attr("src", "/svg/heartOn.svg");
+            }
             $("#showViewModalButton").trigger("click");
         }
 
@@ -346,12 +377,20 @@
             if (!confirm(name + " 추가 하시겠습니까 ?")) {
                 return;
             }
+
+            let formData = new FormData();
+            for ( const file of fileArray ) {
+                formData.append("files", file);
+            }
+            formData.append("boardDto", new Blob([JSON.stringify({"name": name, "content": content})], {type:"application/json"}));
+
             $.ajax({
                 url: "/api/v1/board",
                 type: "POST",
                 datatype: "JSON",
-                data: JSON.stringify({"name": name, "content": content}),
-                contentType: "application/json; charset=UTF-8",
+                data: formData,
+                contentType: false,
+                processData: false,
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // insert 완료시
@@ -365,26 +404,6 @@
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("추가를 실패했습니다.");
-            });
-        }
-
-        $.likeBoard = function() {
-            let id = $("#id2").val();
-            if (id <= 0) {
-                return;
-            }
-            $.ajax({
-                url: "/api/v1/board/like/" + id,
-                type: "GET",
-                datatype: "JSON",
-                contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식
-            }).done(function (data, status, xhr) {
-                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
-                if (status === "success") {
-                }
-            }).fail(function (jqXHR, status, errorThrown) {
-                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("Like 실패했습니다.");
             });
         }
 
@@ -470,6 +489,64 @@
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
             });
         }
+
+        $.likeBoard = function () {
+            let heartIcon = $("#heartIcon");
+            let src = heartIcon.attr("src");
+            let bOff = src.includes("Off");
+            let id = $("#id2").val();
+            if (id <= 0) {
+                return;
+            }
+            if (bOff) {
+                $.ajax({
+                    url: "/api/v1/board/like/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        //heartIcon.attr("src", "/svg/heartOn.svg");
+                        $.showBoardInfo(data);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("Like 실패 했습니다.");
+                });
+            } else {
+                $.ajax({
+                    url: "/api/v1/board/unlike/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        //heartIcon.attr("src", "/svg/heartOff.svg");
+                        $.showBoardInfo(data);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("UnLike 실패 했습니다.");
+                });
+            }
+        }
+
+        let fileArray = new Array();
+
+        $.addFile = function(inputFile) {
+            let num = 0;
+            for ( const file of inputFile.files ) {
+                let html = "";
+                html += "<div id='file" + num + "' class='filebox'>";
+                html += "<div class='filename'>" + file.name + "</div>";
+                html += "</div>";
+                $(".file-list").append(html);
+                fileArray.push(file);
+                num++;
+            }
+        }
     </script>
 </head>
 <body>
@@ -486,12 +563,7 @@
             </div>
             <ul>
                 <li>
-                    <span>id
-                        <button onclick="$.idAsc();">△</button>
-                        <button onclick="$.idDesc();">▽</button>
-                    </span>
-                <span> : </span>
-                <span>name
+                    <span>name
                         <button onclick="$.nameAsc();">△</button>
                         <button onclick="$.nameDesc();">▽</button>
                     </span>
@@ -526,38 +598,61 @@
         </div>
         <div id="modal_box_add" style="display: none">
             <h2>Board Add</h2>
-            <fieldset>
-                <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
-                <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
-                <label for="content">content</label> <textarea id="content" name="content"></textarea>
-            </fieldset>
-            <div class="row">
-                <div class="col-6">
-                    <button id="addButton" onclick="$.addInsert();">추가</button>
-                </div>
-                <div class="col-6">
-                    <button class="modalCloseButton">Close</button>
-                </div>
-            </div>
+                <fieldset>
+                    <div>
+                        <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
+                    </div>
+                    <div>
+                        <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
+                    </div>
+                    <div>
+                        <label for="content">content</label> <textarea id="content" name="content"></textarea>
+                    </div>
+                    <div>
+                        <label for="file">첨부파일</label>
+                        <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple />
+                        <div class="file-list"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <button id="addButton" onclick="$.addInsert();">추가</button>
+                        </div>
+                        <div class="col-6">
+                            <button class="modalCloseButton">Close</button>
+                        </div>
+                    </div>
+                </fieldset>
         </div>
         <div id="modal_box_view" style="display: none">
             <h2>Board Info</h2>
             <fieldset>
-                <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
-                <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
-                <label for="content2">Name</label> <textarea id="content2" name="content2"></textarea>
+                <div>
+                    <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
+                </div>
+                <div>
+                    <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
+                </div>
+                <div>
+                    <label for="content2">Name</label> <textarea id="content2" name="content2"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="viewQty2">보기</label> <input id="viewQty2" readonly/>
+                    </div>
+                    <div class="col-6">
+                        <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeBoard();" />
+                        <span id="likeQty2"></span>
+                    </div>
+                </div>
             </fieldset>
             <div class="row">
-                <div class="col-3">
+                <div class="col-4">
                     <button id="updateButton">수정</button>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <button id="deleteButton">삭제</button>
                 </div>
-                <div class="col-3">
-                    <button id="likeButton">좋아요</button>
-                </div>
-                <div class="col-3">
+                <div class="col-4">
                     <button class="modalCloseButton">Close</button>
                 </div>
             </div>

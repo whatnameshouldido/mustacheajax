@@ -1,5 +1,7 @@
 package com.studymavernspringboot.mustachajax.board;
 
+import com.studymavernspringboot.mustachajax.boardlike.BoardLikeDto;
+import com.studymavernspringboot.mustachajax.boardlike.IBoardLikeMybatisMapper;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ public class BoardServiceImpl implements IBoardService {
     @Autowired
     private IBoardMybatisMapper boardMybatisMapper;
 
+    @Autowired
+    private IBoardLikeMybatisMapper boardLikeMybatisMapper;
+
     @Override
     public void addViewQty(Long id) {
         if (id == null || id <= 0) {
@@ -21,11 +26,41 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
-    public void addLikeQty(Long id) {
-        if (id == null || id <= 0) {
+    public void addLikeQty(CUDInfoDto cudInfoDto, Long id) {
+        if ( cudInfoDto == null || cudInfoDto.getLoginUser() == null || id == null || id <= 0 ) {
             return;
         }
+        BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+                .tbl("board")
+                .likeUserId(cudInfoDto.getLoginUser().getLoginId())
+                .boardId(id)
+                .build();
+
+        Integer count = this.boardLikeMybatisMapper.countByTableUserBoard(boardLikeDto);
+        if ( count > 0 ) {
+            return;
+        }
+        this.boardLikeMybatisMapper.insert(boardLikeDto);
         this.boardMybatisMapper.addLikeQty(id);
+    }
+
+    @Override
+    public void subLikeQty(CUDInfoDto cudInfoDto, Long id) {
+        if ( cudInfoDto == null || cudInfoDto.getLoginUser() == null || id == null || id <= 0 ) {
+            return;
+        }
+        BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+                .tbl("board")
+                .likeUserId(cudInfoDto.getLoginUser().getLoginId())
+                .boardId(id)
+                .build();
+
+        Integer count = this.boardLikeMybatisMapper.countByTableUserBoard(boardLikeDto);
+        if ( count < 1 ) {
+            return;
+        }
+        this.boardLikeMybatisMapper.deleteByTableUserBoard(boardLikeDto);
+        this.boardMybatisMapper.subLikeQty(id);
     }
 
     @Override
