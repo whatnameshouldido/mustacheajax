@@ -1,6 +1,7 @@
 package com.studymavernspringboot.mustachajax.board;
 
 import com.studymavernspringboot.mustachajax.boardlike.BoardLikeDto;
+import com.studymavernspringboot.mustachajax.boardlike.BoardLikeServiceImpl;
 import com.studymavernspringboot.mustachajax.boardlike.IBoardLikeMybatisMapper;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;

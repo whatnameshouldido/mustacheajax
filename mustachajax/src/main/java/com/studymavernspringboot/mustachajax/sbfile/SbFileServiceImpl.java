@@ -59,9 +59,13 @@ public class SbFileServiceImpl implements ISbFileService {
     @Override
     public List<ISbFile> findAllByTblBoardId(ISbFile search) {
         if ( search == null ) {
-            return null;
+            return List.of();
         }
-        return List.of();
+        SbFileDto dto = SbFileDto.builder().build();
+        dto.copyFields(search);
+        List<SbFileDto> list = this.sbFileMybatisMapper.findAllByTblBoardId(dto);
+        List<ISbFile> result = list.stream().map(x -> (ISbFile)x).toList();
+        return result;
     }
 
     @Override
@@ -88,6 +92,15 @@ public class SbFileServiceImpl implements ISbFileService {
             }
         }
         return true;
+    }
+
+    @Override
+    public byte[] getBytesFromFile(ISbFile down) {
+        if(down == null) {
+            return new byte[0];
+        }
+        byte[] result = this.fileCtrlService.downloadFile(down.getTbl(), down.getUniqName(), down.getFileType());
+        return result;
     }
 
     private String getFileType(String fileName) {
