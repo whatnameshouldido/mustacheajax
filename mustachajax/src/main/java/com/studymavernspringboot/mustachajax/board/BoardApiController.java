@@ -4,7 +4,6 @@ import com.studymavernspringboot.mustachajax.boardlike.BoardLikeDto;
 import com.studymavernspringboot.mustachajax.boardlike.IBoardLikeService;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
-import com.studymavernspringboot.mustachajax.filecntl.FileCtrlService;
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.MemberRole;
 import com.studymavernspringboot.mustachajax.sbfile.ISbFile;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -86,7 +84,7 @@ public class BoardApiController {
     }
 
     @DeleteMapping("/delflag")
-    public ResponseEntity<Boolean> deleteFlag(Model model, @RequestBody BoardDto dto) {
+    public ResponseEntity<Boolean> updateDeleteFlag(Model model, @RequestBody BoardDto dto) {
         try {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
                 return ResponseEntity.badRequest().build();
@@ -96,7 +94,7 @@ public class BoardApiController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
-            Boolean result = this.boardService.deleteFlag(cudInfoDto, dto);
+            Boolean result = this.boardService.updateDeleteFlag(cudInfoDto, dto);
             return ResponseEntity.ok(result);
         } catch ( Exception ex ) {
             log.error(ex.toString());
@@ -246,7 +244,7 @@ public class BoardApiController {
                 .boardId(id)
                 .build();
         Integer likeCount = this.boardLikeService.countByTableUserBoard(boardLikeDto);
-        result.setDelFlag(likeCount.toString());
+        result.setDeleteDt(likeCount.toString());
         return result;
     }
 
@@ -291,6 +289,34 @@ public class BoardApiController {
                     .contentLength(bytes.length)
                     .header("Content-Type", "application/octet-stream")
                     .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(name, StandardCharsets.UTF_8))
+                    .body(resource);
+        } catch ( Exception ex ) {
+            log.error(ex.toString());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/fileId/{id}")
+    public ResponseEntity<ByteArrayResource> downloadFileId(Model model
+            , @PathVariable Long id) {
+        try {
+            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            if ( loginUser == null ) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            if ( id == null || id <= 0 ) {
+                return ResponseEntity.badRequest().build();
+            }
+            ISbFile find = this.sbFileService.findById(id);
+            if ( find == null ) {
+                return ResponseEntity.notFound().build();
+            }
+            byte[] bytes = this.sbFileService.getBytesFromFile(find);
+            ByteArrayResource resource = new ByteArrayResource(bytes);
+            return ResponseEntity.ok()
+                    .contentLength(bytes.length)
+                    .header("Content-Type", "application/octet-stream")
+                    .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(find.getName(), StandardCharsets.UTF_8))
                     .body(resource);
         } catch ( Exception ex ) {
             log.error(ex.toString());

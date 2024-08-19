@@ -1,7 +1,6 @@
 package com.studymavernspringboot.mustachajax.board;
 
 import com.studymavernspringboot.mustachajax.boardlike.BoardLikeDto;
-import com.studymavernspringboot.mustachajax.boardlike.BoardLikeServiceImpl;
 import com.studymavernspringboot.mustachajax.boardlike.IBoardLikeMybatisMapper;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
@@ -120,14 +119,14 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
-    public Boolean deleteFlag(CUDInfoDto info, BoardDto dto) {
+    public Boolean updateDeleteFlag(CUDInfoDto info, BoardDto dto) {
         if ( info == null || dto == null ) {
             return false;
         }
         BoardDto delete = BoardDto.builder().build();
         delete.copyFields(dto);
         info.setDeleteInfo(delete);
-        this.boardMybatisMapper.deleteFlag(delete);
+        this.boardMybatisMapper.updateDeleteFlag(delete);
         return true;
     }
 

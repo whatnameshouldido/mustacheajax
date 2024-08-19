@@ -1,5 +1,8 @@
 package com.studymavernspringboot.mustachajax.security.controller;
 
+import com.studymavernspringboot.mustachajax.member.IMember;
+import com.studymavernspringboot.mustachajax.member.IMemberService;
+import com.studymavernspringboot.mustachajax.member.MemberRole;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
