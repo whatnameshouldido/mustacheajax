@@ -1,7 +1,7 @@
 package com.studymavernspringboot.mustachajax.board;
 
-import com.studymavernspringboot.mustachajax.boardlike.BoardLikeDto;
-import com.studymavernspringboot.mustachajax.boardlike.IBoardLikeService;
+import com.studymavernspringboot.mustachajax.sblike.SbLikeDto;
+import com.studymavernspringboot.mustachajax.sblike.ISbLikeService;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import com.studymavernspringboot.mustachajax.member.IMember;
@@ -30,7 +30,7 @@ public class BoardApiController {
     private IBoardService boardService;
 
     @Autowired
-    private IBoardLikeService boardLikeService;
+    private ISbLikeService boardLikeService;
 
     @Autowired
     private ISbFileService sbFileService;
@@ -238,9 +238,9 @@ public class BoardApiController {
         if ( result == null ) {
             return null;
         }
-        BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+        SbLikeDto boardLikeDto = SbLikeDto.builder()
                 .tbl("board")
-                .likeUserId(loginUser.getLoginId())
+                .nickname(loginUser.getNickname())
                 .boardId(id)
                 .build();
         Integer likeCount = this.boardLikeService.countByTableUserBoard(boardLikeDto);
