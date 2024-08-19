@@ -9,6 +9,7 @@ import com.studymavernspringboot.mustachajax.member.MemberRole;
 import com.studymavernspringboot.mustachajax.sbfile.ISbFile;
 import com.studymavernspringboot.mustachajax.sbfile.ISbFileService;
 import com.studymavernspringboot.mustachajax.sbfile.SbFileDto;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -44,7 +45,7 @@ public class BoardApiController {
             if ( dto == null ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -67,7 +68,7 @@ public class BoardApiController {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -89,7 +90,7 @@ public class BoardApiController {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -108,7 +109,7 @@ public class BoardApiController {
             if ( id == null || id <= 0 ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -129,7 +130,7 @@ public class BoardApiController {
             if ( id == null || id <= 0 ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -151,7 +152,7 @@ public class BoardApiController {
             if ( searchAjaxDto == null ) {
                 return ResponseEntity.badRequest().build();
             }
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -172,7 +173,7 @@ public class BoardApiController {
     @PostMapping("/countName")
     public ResponseEntity<Integer> countAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -190,7 +191,7 @@ public class BoardApiController {
     @GetMapping("/like/{id}")
     public ResponseEntity<IBoard> addLikeQty(Model model, @PathVariable Long id) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -213,7 +214,7 @@ public class BoardApiController {
     @GetMapping("/unlike/{id}")
     public ResponseEntity<IBoard> subLikeQty(Model model, @PathVariable Long id) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -252,7 +253,7 @@ public class BoardApiController {
     public ResponseEntity<List<ISbFile>> getFileList(Model model
             , @PathVariable String tbl, @PathVariable Long boardId) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -274,7 +275,7 @@ public class BoardApiController {
             , @PathVariable String tbl, @PathVariable String name
             , @PathVariable String uniqName, @PathVariable String fileType) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -300,7 +301,7 @@ public class BoardApiController {
     public ResponseEntity<ByteArrayResource> downloadFileId(Model model
             , @PathVariable Long id) {
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }

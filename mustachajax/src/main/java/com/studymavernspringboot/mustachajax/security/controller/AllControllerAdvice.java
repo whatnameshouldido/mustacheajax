@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.security.controller;
 
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.IMemberService;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -34,7 +35,7 @@ public class AllControllerAdvice {
                 .filter(url::contains).findFirst().orElse(null);
         if ( bFind != null && loginId != null ) {
             IMember loginUser = this.memberService.findByLoginId(loginId);
-            model.addAttribute("loginUser", loginUser);
+            model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
         }
     }
 }

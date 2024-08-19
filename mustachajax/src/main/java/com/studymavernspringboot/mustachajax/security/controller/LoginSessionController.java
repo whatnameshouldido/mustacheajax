@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.security.controller;
 
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.IMemberService;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import com.studymavernspringboot.mustachajax.security.dto.LoginRequest;
 import com.studymavernspringboot.mustachajax.security.dto.SignUpRequest;
 import jakarta.servlet.http.Cookie;
@@ -59,7 +60,7 @@ public class LoginSessionController {
                 return "login/fail";
             }
             HttpSession session = request.getSession();
-            session.setAttribute("loginId", loginUser.getLoginId());
+            session.setAttribute(SecurityConfig.LOGINUSER, loginUser.getLoginId());
             session.setMaxInactiveInterval(60 * 60);
         } catch (Exception ex) {
             log.error(ex.toString());

@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.category;
 
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import com.studymavernspringboot.mustachajax.member.IMember;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -146,7 +147,7 @@ public class CategoryController {
         //      다만 JSON 문자열의 데이터가 SearchCategoryDto 데이터형이어야 한다.
         //      {"searchName":"값", "sortColumn":"값", "sortAscDsc":"값", "page":값}
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             // POSTMAN 으로 테스트 안되지만, WEB 화면에서는 로그인한 사용자만 가능하다.
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -183,7 +184,7 @@ public class CategoryController {
         //      다만 JSON 문자열의 데이터가 SearchCategoryDto 데이터형이어야 한다.
         //      {"searchName":"값"}
         try {
-            IMember loginUser = (IMember)model.getAttribute("loginUser");
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             // POSTMAN 으로 테스트 안되지만, WEB 화면에서는 로그인한 사용자만 가능하다.
             if ( loginUser == null ) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -3,6 +3,7 @@ package com.studymavernspringboot.mustachajax.security.controller;
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.IMemberService;
 import com.studymavernspringboot.mustachajax.member.MemberRole;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +29,7 @@ public class IndexController {
     private String signout(HttpServletResponse response, HttpSession session) {
         session.invalidate();
 
-        Cookie cookie = new Cookie("loginId", null);
+        Cookie cookie = new Cookie(SecurityConfig.LOGINUSER, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return "login/signout";

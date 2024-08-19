@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.security.controller;
 
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.IMemberService;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import com.studymavernspringboot.mustachajax.security.dto.LoginRequest;
 import com.studymavernspringboot.mustachajax.security.dto.SignUpRequest;
 import jakarta.servlet.http.Cookie;
@@ -53,13 +54,13 @@ public class LoginCookieController {
             if ( loginUser == null ) {
                 return "login/fail";
             }
-            Cookie cookie = new Cookie("loginId", loginUser.getLoginId());
+            Cookie cookie = new Cookie(SecurityConfig.LOGINUSER, loginUser.getLoginId());
             cookie.setMaxAge(60 * 30);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             response.addCookie(cookie);
 
-            model.addAttribute("loginUser", loginUser);
+            model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
         } catch (Exception ex) {
             log.error(ex.toString());
         }

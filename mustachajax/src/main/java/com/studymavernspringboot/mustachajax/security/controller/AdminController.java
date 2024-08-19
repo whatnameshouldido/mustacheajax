@@ -3,6 +3,7 @@ package com.studymavernspringboot.mustachajax.security.controller;
 import com.studymavernspringboot.mustachajax.member.IMember;
 import com.studymavernspringboot.mustachajax.member.IMemberService;
 import com.studymavernspringboot.mustachajax.member.MemberRole;
+import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,13 +29,13 @@ public class AdminController {
         if ( !loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
             return "redirect:/";
         }
-        model.addAttribute("loginUser", loginUser);
+        model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
         return "admin/info";
     }
 
     @GetMapping("/infoSession")
     private String showInfoSession(Model model) {
-        IMember loginUser = (IMember)model.getAttribute("loginUser");
+        IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
         if ( loginUser == null ) {
             return "redirect:/";
         }
