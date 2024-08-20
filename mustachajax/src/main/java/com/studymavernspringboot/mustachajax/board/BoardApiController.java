@@ -1,5 +1,6 @@
 package com.studymavernspringboot.mustachajax.board;
 
+import com.studymavernspringboot.mustachajax.commons.dto.ResponseDto;
 import com.studymavernspringboot.mustachajax.sblike.SbLikeDto;
 import com.studymavernspringboot.mustachajax.sblike.ISbLikeService;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
@@ -37,200 +38,264 @@ public class BoardApiController {
     private ISbFileService sbFileService;
 
     @PostMapping
-    public ResponseEntity<IBoard> insert(Model model
+    public ResponseEntity<ResponseDto> insert(Model model
             , @RequestPart(value="boardDto") BoardDto dto
             , @RequestPart(value="files", required = false) MultipartFile[] files
     ) {
         try {
             if ( dto == null ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
             BoardDto result = this.boardService.insert(cudInfoDto, dto);
             if ( result == null ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
             this.sbFileService.insertFiles(result, files);
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @PatchMapping("")
-    public ResponseEntity<IBoard> update(Model model, @RequestBody BoardDto dto) {
+    public ResponseEntity<ResponseDto> update(Model model, @RequestBody BoardDto dto) {
         try {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
+            }
+            IBoard find = this.boardService.findById(dto.getId());
+            if (find == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("데이터 없음").build());
             }
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
+            } else if (!loginUser.getRole().equals(MemberRole.ADMIN.toString()) && !loginUser.getNickname().equals(find.getCreateId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("관리자와 본인만 수정").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
             IBoard result = this.boardService.update(cudInfoDto, dto);
             if ( result == null ) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @DeleteMapping("/delflag")
-    public ResponseEntity<Boolean> updateDeleteFlag(Model model, @RequestBody BoardDto dto) {
+    public ResponseEntity<ResponseDto> updateDeleteFlag(Model model, @RequestBody BoardDto dto) {
         try {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
+            }
+            IBoard find = this.boardService.findById(dto.getId());
+            if (find == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("데이터 없음").build());
             }
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
+            } else if (!loginUser.getRole().equals(MemberRole.ADMIN.toString()) && !loginUser.getNickname().equals(find.getCreateId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("관리자와 본인만 삭제").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
             Boolean result = this.boardService.updateDeleteFlag(cudInfoDto, dto);
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteById(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> deleteById(Model model, @PathVariable Long id) {
         try {
             if ( id == null || id <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
+            }
+            IBoard find = this.boardService.findById(id);
+            if (find == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("데이터 없음").build());
             }
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             if ( !loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("관리자만 가능").build());
             }
             Boolean result = this.boardService.deleteById(id);
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IBoard> findById(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> findById(Model model, @PathVariable Long id) {
         try {
             if ( id == null || id <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             this.boardService.addViewQty(id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PostMapping("/searchName")
-    public ResponseEntity<SearchAjaxDto> findAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
-        try {
-            if ( searchAjaxDto == null ) {
-                return ResponseEntity.badRequest().build();
-            }
-            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
-            if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            int total = this.boardService.countAllByNameContains(searchAjaxDto);
-            List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
-            if ( list == null ) {
-                return ResponseEntity.notFound().build();
-            }
-            searchAjaxDto.setTotal(total);
-            searchAjaxDto.setDataList(list);
-            return ResponseEntity.ok(searchAjaxDto);
-        } catch ( Exception ex ) {
-            log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @PostMapping("/countName")
-    public ResponseEntity<Integer> countAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
+    public ResponseEntity<ResponseDto> countAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
         try {
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             if ( searchAjaxDto == null ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             int total = this.boardService.countAllByNameContains(searchAjaxDto);
-            return ResponseEntity.ok(total);
+            ResponseDto res = ResponseDto.builder().message("ok").result(total).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
+        }
+    }
+
+    @PostMapping("/searchName")
+    public ResponseEntity<ResponseDto> findAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
+        try {
+            if ( searchAjaxDto == null ) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
+            }
+            IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
+            if ( loginUser == null ) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
+            }
+            int total = this.boardService.countAllByNameContains(searchAjaxDto);
+            List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
+            if ( list == null ) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
+            }
+            searchAjaxDto.setTotal(total);
+            searchAjaxDto.setDataList(list);
+            ResponseDto res = ResponseDto.builder().message("ok").result(searchAjaxDto).build();
+            return ResponseEntity.ok(res);
+        } catch ( Exception ex ) {
+            log.error(ex.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @GetMapping("/like/{id}")
-    public ResponseEntity<IBoard> addLikeQty(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> addLikeQty(Model model, @PathVariable Long id) {
         try {
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             if ( id == null || id <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
             this.boardService.addLikeQty(cudInfoDto, id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
     @GetMapping("/unlike/{id}")
-    public ResponseEntity<IBoard> subLikeQty(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> subLikeQty(Model model, @PathVariable Long id) {
         try {
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             if ( id == null || id <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
             this.boardService.subLikeQty(cudInfoDto, id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
@@ -250,23 +315,27 @@ public class BoardApiController {
     }
 
     @GetMapping("/files/{tbl}/{boardId}")
-    public ResponseEntity<List<ISbFile>> getFileList(Model model
+    public ResponseEntity<ResponseDto> getFileList(Model model
             , @PathVariable String tbl, @PathVariable Long boardId) {
         try {
             IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
             if ( loginUser == null ) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ResponseDto.builder().message("로그인 필요").build());
             }
             if ( tbl == null || tbl.isEmpty() || boardId == null || boardId <= 0 ) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ResponseDto.builder().message("입력값 비정상").build());
             }
             SbFileDto search = SbFileDto.builder()
                     .tbl(tbl).boardId(boardId).build();
             List<ISbFile> result = this.sbFileService.findAllByTblBoardId(search);
-            return ResponseEntity.ok(result);
+            ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
+            return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.builder().message(ex.getMessage()).build());
         }
     }
 
@@ -293,7 +362,7 @@ public class BoardApiController {
                     .body(resource);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -321,7 +390,7 @@ public class BoardApiController {
                     .body(resource);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

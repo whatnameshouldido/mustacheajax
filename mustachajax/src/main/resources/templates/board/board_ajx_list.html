@@ -243,9 +243,9 @@
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // javascript 기본 객체 console 에 프린트한다.
                 if (status === "success") {
-                    $("#total").html(data.total);   // id="total" 요소의 <요소>문자</요소> html 의 문자를 설정한다.
-                    $.showBoardList(data.dataList);
-                    $.makePageUI(data.total, page);
+                    $("#total").html(data.result.total);   // id="total" 요소의 <요소>문자</요소> html 의 문자를 설정한다.
+                    $.showBoardList(data.result.dataList);
+                    $.makePageUI(data.result.total, page);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 // ajax 의 요청이 실패하면 실행한다.
@@ -253,7 +253,7 @@
                 // status : http 응답, 4XX, 5XX
                 // errorThrown : error 를 던진 곳의 정보
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("검색을 실패했습니다.");
+                alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -299,11 +299,11 @@
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
                     $.getBoardFiles(id);
-                    $.showBoardInfo(data);
+                    $.showBoardInfo(data.result);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("보기 실패했습니다.");
+                alert("보기 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -338,11 +338,11 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.showBoardFiles(data);
+                    $.showBoardFiles(data.result);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("첨부파일 보기 실패했습니다.");
+                alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -461,7 +461,7 @@
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("추가를 실패했습니다.");
+                alert("추가를 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -478,7 +478,7 @@
                 datatype: "JSON",
                 data: JSON.stringify({"id": id, "name": name, "content": content}),
                 contentType: "application/json; charset=UTF-8",
-            }).done (function(data, status, xhr) {
+            }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // update 성공 완료시
                 $.searchBoardList(page);
@@ -489,7 +489,7 @@
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("수정를 실패했습니다.");
+                alert("수정를 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -517,7 +517,7 @@
                 // }
             }).fail(function(jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("삭제를 실패했습니다.");
+                alert("삭제를 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
         $.doneDelete = function() {
@@ -532,7 +532,7 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // 삭제 후에 검색식과 total 로 계산해서 현재 페이지를 page-1 해야 할지 결정 한다.
-                total = data;
+                total = data.result;
                 let totPage = ~~((total + rowsOnePage - 1) / rowsOnePage);
                 if ( totPage < page ) {
                     page = totPage;
@@ -545,6 +545,7 @@
                 $(".modalCloseButton").trigger("click");
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("삭제 후 새로고침을 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
@@ -565,12 +566,11 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        //heartIcon.attr("src", "/svg/heartOn.svg");
-                        $.showBoardInfo(data);
+                        $.showBoardInfo(data.result);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                    alert("Like 실패 했습니다.");
+                    alert("Like 실패 했습니다. " + jqXHR.responseJSON.message);
                 });
             } else {
                 $.ajax({
@@ -581,12 +581,11 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        //heartIcon.attr("src", "/svg/heartOff.svg");
-                        $.showBoardInfo(data);
+                        $.showBoardInfo(data.result);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                    alert("UnLike 실패 했습니다.");
+                    alert("UnLike 실패 했습니다. " + jqXHR.responseJSON.message);
                 });
             }
         }
