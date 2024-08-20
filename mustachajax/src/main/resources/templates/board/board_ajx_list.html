@@ -461,9 +461,27 @@
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("추가를 실패했습니다. " + jqXHR.responseJSON.message);
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("추가를 실패했습니다. " + message);
             });
         }
+
+        function getErrorMessage(responseJSON) {
+            if ( responseJSON === undefined ) {
+                return "";
+            }
+            if ( responseJSON.errors !== undefined && responseJSON.errors.length >= 1 ) {
+                let message = "";
+                for ( let i = 0; i < responseJSON.errors.length; i++ ) {
+                    message += "\n" + responseJSON.errors[i].field + " : " +
+                        responseJSON.errors[i].defaultMessage;
+                }
+                return message;
+            } else {
+                return responseJSON.message;
+            }
+        }
+
 
         $.update = function () {
             let id = $("#id2").val();
@@ -489,7 +507,8 @@
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("수정를 실패했습니다. " + jqXHR.responseJSON.message);
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("수정을 실패했습니다. " + message);
             });
         }
 

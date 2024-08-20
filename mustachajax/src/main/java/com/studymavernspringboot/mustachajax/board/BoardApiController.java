@@ -17,6 +17,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +40,7 @@ public class BoardApiController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> insert(Model model
-            , @RequestPart(value="boardDto") BoardDto dto
+            , @Validated @RequestPart(value="boardDto") BoardDto dto
             , @RequestPart(value="files", required = false) MultipartFile[] files
     ) {
         try {
@@ -180,7 +181,7 @@ public class BoardApiController {
             this.boardService.addViewQty(id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
             ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
@@ -259,7 +260,7 @@ public class BoardApiController {
             this.boardService.addLikeQty(cudInfoDto, id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
             ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
@@ -287,7 +288,7 @@ public class BoardApiController {
             this.boardService.subLikeQty(cudInfoDto, id);
             IBoard result = this.getBoardAndLike(id, loginUser);
             if ( result == null ) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
             ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
