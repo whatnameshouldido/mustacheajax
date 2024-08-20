@@ -39,7 +39,13 @@ public class SbFileServiceImpl implements ISbFileService {
 
     @Override
     public Boolean updateDeleteFlag(CUDInfoDto info, ISbFile dto) {
-        return null;
+        if ( dto == null ) {
+            return false;
+        }
+        SbFileDto update = SbFileDto.builder().build();
+        update.copyFields(dto);
+        this.sbFileMybatisMapper.updateDeleteFlag(update);
+        return true;
     }
 
     @Override
@@ -93,6 +99,19 @@ public class SbFileServiceImpl implements ISbFileService {
                 this.fileCtrlService.saveFile(file, insert.getUniqName() + insert.getFileType());
             } catch (Exception ex) {
                 log.error(ex.toString());
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean updateFiles(BoardDto boardDto, List<SbFileDto> sbFileDtoList) {
+        if ( boardDto == null ) {
+            return false;
+        }
+        for ( SbFileDto sbFileDto : sbFileDtoList ) {
+            if (sbFileDto.getDeleteFlag()) {
+                this.sbFileMybatisMapper.updateDeleteFlag(sbFileDto);
             }
         }
         return true;

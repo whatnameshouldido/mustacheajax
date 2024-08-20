@@ -27,5 +27,5 @@ public class SignUpRequest extends BaseNullRequest implements IMember {
     @Null
     private String role;
     @Null
-    private Boolean Active;
+    private Boolean active;
 }

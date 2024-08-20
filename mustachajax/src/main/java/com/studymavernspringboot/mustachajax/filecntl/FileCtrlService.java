@@ -43,4 +43,15 @@ public class FileCtrlService {
         }
         return bytes;
     }
+
+    public Boolean deleteFile(String tbl, String uniqName, String fileType) {
+        try {
+            Path path = Paths.get(uploadDir + "/" + tbl + "/" + uniqName + fileType);
+            Files.delete(path);
+        } catch (IOException ex) {
+            log.error(ex.toString());
+            return false;
+        }
+        return true;
+    }
 }

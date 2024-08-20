@@ -28,6 +28,9 @@ public interface ISbFile {
     Long getBoardId();
     void setBoardId(Long boardId);
 
+    Boolean getDeleteFlag();
+    void setDeleteFlag(Boolean deleteFlag);
+
     default void copyFields(ISbFile from) {
         if (from == null) {
             return;
@@ -58,6 +61,9 @@ public interface ISbFile {
         }
         if (from.getBoardId() != null) {
             this.setBoardId(from.getBoardId());
+        }
+        if (from.getDeleteFlag() != null) {
+            this.setDeleteFlag(from.getDeleteFlag());
         }
     }
 }

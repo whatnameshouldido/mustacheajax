@@ -70,7 +70,10 @@ public class BoardApiController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<ResponseDto> update(Model model, @RequestBody BoardDto dto) {
+    public ResponseEntity<ResponseDto> update(Model model
+            , @Validated @RequestPart(value="boardDto") BoardDto dto
+            , @RequestPart(value="sbfiles", required = false) List<SbFileDto> sbFileDtoList
+            , @RequestPart(value="files", required = false) MultipartFile[] files) {
         try {
             if ( dto == null || dto.getId() == null || dto.getId() <= 0 ) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -90,11 +93,13 @@ public class BoardApiController {
                         .body(ResponseDto.builder().message("관리자와 본인만 수정").build());
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
-            IBoard result = this.boardService.update(cudInfoDto, dto);
+            BoardDto result = this.boardService.update(cudInfoDto, dto);
             if ( result == null ) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(ResponseDto.builder().message("에러 관리자 문의").build());
             }
+            this.sbFileService.updateFiles(result, sbFileDtoList);
+            this.sbFileService.insertFiles(result, files);
             ResponseDto res = ResponseDto.builder().message("ok").result(result).build();
             return ResponseEntity.ok(res);
         } catch ( Exception ex ) {
