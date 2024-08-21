@@ -117,6 +117,9 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
             //한 페이지당 보여주는 행의 갯수
             dto.setRowsOnePage(10);
         }
+        if ( dto.getPage() <= 0 ) {
+            dto.setPage(1);
+        }
         List<ICategory> list = this.getICategoryList(
                 this.categoryMybatisMapper.findAllByNameContains(dto)
                 // CategoryMybatisMapper 의 쿼리 XML 파일의 <select id="findAllByNameContains" 문장을 실행한 결과를 리턴한다.

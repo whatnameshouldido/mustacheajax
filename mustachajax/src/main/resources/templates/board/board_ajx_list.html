@@ -469,10 +469,12 @@
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // insert 완료시
                 $("#searchName").val("");
-                $.searchBoardList(1);
+                fileArrayAdd = new Array();
+                $("#fileListAdd").children().remove();
                 $("#id").val("");
                 $("#name").val("");
                 $("#content").val("");
+                $.searchBoardList(1);
                 $(".modalCloseButton").trigger("click");
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
@@ -526,6 +528,8 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // update 성공 완료시
+                fileArrayModity = new Array();
+                $("#fileListView").children().remove();
                 $.searchBoardList(page);
                 $("#id2").val("");
                 $("#name2").val("");
@@ -649,6 +653,7 @@
                 fileArrayAdd.push(file);
                 num++;
             }
+            $("#file").val("");
         }
 
         $.addFileModity = function(inputFile) {
@@ -662,6 +667,7 @@
                 fileArrayModity.push(file);
                 num--;
             }
+            $("#fileModity").val("");
         }
     </script>
 </head>

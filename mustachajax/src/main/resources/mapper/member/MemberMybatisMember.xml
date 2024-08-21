@@ -20,7 +20,7 @@
                , #{password}
                , #{email}
                , #{role}
-               , #{active}
+               , 0
                , #{createDt}
                , #{createId} )
     </insert>

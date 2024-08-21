@@ -50,6 +50,7 @@ public class MemberServiceImpl implements IMemberService {
         insert.copyFields(dto);
         insert.setPassword(encoder.encode(dto.getPassword()));
         insert.setRole(MemberRole.USER.toString());
+        insert.setActive(false);
         this.memberMybatisMapper.insert(insert);
         return dto;
     }

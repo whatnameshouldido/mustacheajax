@@ -14,28 +14,26 @@ import java.nio.file.Paths;
 public class FileCtrlService {
     private final String uploadDir = "Z:/home/files";
 
-    public Boolean saveFile(MultipartFile file, String destFileName) throws IOException {
-        if ( file == null ) {
-            return false;
+    private void checkDirectory(String directory) throws IOException {
+        Path path = Paths.get(directory);
+        if ( !Files.exists(path) ) {
+            Files.createDirectories(path);
         }
-        Files.copy( file.getInputStream(), Path.of(uploadDir + "/board/" + destFileName) );
-        return true;
     }
 
-    public Boolean saveFiles(MultipartFile[] files) throws IOException {
-        if ( files == null || files.length <= 0 ) {
+    public Boolean saveFile(MultipartFile file, String tbl, String destFileName) throws IOException {
+        if ( tbl == null || tbl.isEmpty() || file == null ) {
             return false;
         }
-        for(MultipartFile file : files) {
-            Files.copy(file.getInputStream()
-                    , Path.of(uploadDir + "/" + file.getOriginalFilename()));
-        }
+        this.checkDirectory(uploadDir + "/" + tbl);
+        Files.copy( file.getInputStream(), Path.of(uploadDir + "/" + tbl + "/" + destFileName) );
         return true;
     }
 
     public byte[] downloadFile(String tbl, String uniqName, String fileType) {
         byte[] bytes = null;
         try {
+            this.checkDirectory(uploadDir + "/" + tbl);
             Path path = Paths.get(uploadDir + "/" + tbl + "/" + uniqName + fileType);
             bytes = Files.readAllBytes(path);
         } catch (IOException ex) {
@@ -46,6 +44,7 @@ public class FileCtrlService {
 
     public Boolean deleteFile(String tbl, String uniqName, String fileType) {
         try {
+            this.checkDirectory(uploadDir + "/" + tbl);
             Path path = Paths.get(uploadDir + "/" + tbl + "/" + uniqName + fileType);
             Files.delete(path);
         } catch (IOException ex) {

@@ -96,7 +96,7 @@ public class SbFileServiceImpl implements ISbFileService {
                     .build();
             try {
                 this.sbFileMybatisMapper.insert(insert);
-                this.fileCtrlService.saveFile(file, insert.getUniqName() + insert.getFileType());
+                this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName() + insert.getFileType());
             } catch (Exception ex) {
                 log.error(ex.toString());
             }

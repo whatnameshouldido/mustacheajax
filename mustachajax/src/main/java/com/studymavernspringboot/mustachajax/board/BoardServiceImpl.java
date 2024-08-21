@@ -92,6 +92,9 @@ public class BoardServiceImpl implements IBoardService {
         if ( searchAjaxDto.getRowsOnePage() == null ) {
             searchAjaxDto.setRowsOnePage(10);
         }
+        if ( searchAjaxDto.getPage() <= 0 ) {
+            searchAjaxDto.setPage(1);
+        }
         List<BoardDto> list = this.boardMybatisMapper.findAllByNameContains(searchAjaxDto);
         return list;
     }
