@@ -1,7 +1,6 @@
 package com.studymavernspringboot.mustachajax.category;
 
-
-//메소드 프로토타입만 선언하고 실행하는 몸체는 없는 인터페이스, 일반화, 추상화, 다형성, 객체지향의 꽃(중심점)
+// 메소드 프로토타입만 선언하고 실행하는 몸체는 없는 인터페이스, 일반화, 추상화, 다형성, 객체지향의중심
 public interface ICategory {
     Long getId();
     void setId(Long id);

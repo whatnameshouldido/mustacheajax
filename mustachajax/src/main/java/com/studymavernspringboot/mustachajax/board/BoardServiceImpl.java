@@ -2,7 +2,6 @@ package com.studymavernspringboot.mustachajax.board;
 
 import com.studymavernspringboot.mustachajax.filecntl.FileCtrlService;
 import com.studymavernspringboot.mustachajax.sbfile.ISbFileMybatisMapper;
-import com.studymavernspringboot.mustachajax.sbfile.ISbFileService;
 import com.studymavernspringboot.mustachajax.sbfile.SbFileDto;
 import com.studymavernspringboot.mustachajax.sblike.SbLikeDto;
 import com.studymavernspringboot.mustachajax.sblike.ISbLikeMybatisMapper;
@@ -41,7 +40,7 @@ public class BoardServiceImpl implements IBoardService {
             return;
         }
         SbLikeDto boardLikeDto = SbLikeDto.builder()
-                .tbl("board")
+                .tbl(new BoardDto().getTbl())
                 .nickname(cudInfoDto.getLoginUser().getNickname())
                 .boardId(id)
                 .build();
@@ -60,7 +59,7 @@ public class BoardServiceImpl implements IBoardService {
             return;
         }
         SbLikeDto boardLikeDto = SbLikeDto.builder()
-                .tbl("board")
+                .tbl(new BoardDto().getTbl())
                 .nickname(cudInfoDto.getLoginUser().getNickname())
                 .boardId(id)
                 .build();
@@ -140,7 +139,7 @@ public class BoardServiceImpl implements IBoardService {
         delete.copyFields(dto);
         info.setDeleteInfo(delete);
         this.boardMybatisMapper.updateDeleteFlag(delete);
-        SbFileDto search = SbFileDto.builder().tbl("board").boardId(delete.getId()).build();
+        SbFileDto search = SbFileDto.builder().tbl(dto.getTbl()).boardId(delete.getId()).build();
         List<SbFileDto> list = this.sbFileMybatisMapper.findAllByTblBoardId(search);
         for ( SbFileDto sbFileDto : list ) {
             sbFileDto.setDeleteFlag(true);

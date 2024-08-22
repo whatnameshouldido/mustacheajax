@@ -81,7 +81,7 @@
           AND deleteFlag = false
     </update>
 
-    <select id="countAllByNameContains" parameterType="SearchAjaxDto" resultType="int">
+    <select id="countAllByNameContains" parameterType="SearchAjaxDto" resultType="Integer">
         SELECT count(*)
         FROM board_tbl
         WHERE name like CONCAT('%',#{searchName},'%')

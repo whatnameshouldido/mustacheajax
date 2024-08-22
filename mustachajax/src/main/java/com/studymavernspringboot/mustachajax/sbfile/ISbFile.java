@@ -16,8 +16,8 @@ public interface ISbFile {
     String getUniqName();
     void setUniqName(String uniqName);
 
-    Integer getLength();
-    void setLength(Integer length);
+    Long getLength();
+    void setLength(Long length);
 
     String getDescription();
     void setDescription(String description);

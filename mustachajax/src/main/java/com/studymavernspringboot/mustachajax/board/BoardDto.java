@@ -21,4 +21,7 @@ public class BoardDto extends BaseDto implements IBoard {
     private String content;
     private Integer viewQty;
     private Integer likeQty;
+    public String getTbl() {
+        return "board";
+    }
 }

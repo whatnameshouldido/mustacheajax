@@ -120,7 +120,7 @@
         $(function () {
             // jQuery 3.0 버전부터 실행할 기능을 정의해주세요.
             // HTML 문서 로딩이 완료되면 자동적으로 최초 한번 실행되는 jQuery 부분
-            $.searchBoardList(1);
+            $.searchItemList(1);
 
             $("#updateButton").click(function () {
                 // id="updateButton" 요소의 마우스 클릭 이벤트발생 시 실행한다.
@@ -133,20 +133,20 @@
             });
 
             $("#likeButton").click(function () {
-                $.likeBoard();
+                $.likeItem();
             });
 
             $("#searchName").on("keyup", function (key) {
                 // id="searchName" 요소의 키보드 업 이벤트발생 시 실행한다.
                 if(key.keyCode === 13) {
                     // key 매개변수 keyCode 에서 업 이벤트 발생한 키보드 키
-                    $.searchBoardList(1);
+                    $.searchItemList(1);
                 }
             });
 
             $("#rowsOnePage").change(function () {
                 rowsOnePage = $("#rowsOnePage").val();
-                $.searchBoardList(1);
+                $.searchItemList(1);
             });
 
             $('#showAddModalButton').click(function () {
@@ -167,55 +167,56 @@
                 $('.modal_bg').fadeOut();
             });
         });
+
         $.idAsc = function () {  // jQuery 함수 선언
             sortColumn = "id";
             sortAscDesc = "ASC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.idDesc = () => {  // jQuery 함수 선언
             sortColumn = "id";
             sortAscDesc = "DESC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.nameAsc = function () {
             sortColumn = "name";
             sortAscDesc = "ASC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.nameDesc = () => {
             sortColumn = "name";
             sortAscDesc = "DESC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.createDtAsc = function () {
             sortColumn = "createDt";
             sortAscDesc = "ASC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.createDtDesc = () => {
             sortColumn = "createDt";
             sortAscDesc = "DESC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.createIdAsc = function () {
             sortColumn = "createId";
             sortAscDesc = "ASC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
         $.createIdDesc = () => {
             sortColumn = "createId";
             sortAscDesc = "DESC";
-            $.searchBoardList(page);
+            $.searchItemList(page);
         }
 
-        $.searchBoardList = function (pPage) {
+        $.searchItemList = function (pPage) {
             page = pPage;
             $("#id").val("");   // id="id" 요소의 value 속성의 값을 "" 설정한다.
             $("#name").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
@@ -243,9 +244,9 @@
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // javascript 기본 객체 console 에 프린트한다.
                 if (status === "success") {
-                    $("#total").html(data.result.total);   // id="total" 요소의 <요소>문자</요소> html 의 문자를 설정한다.
-                    $.showBoardList(data.result.dataList);
-                    $.makePageUI(data.result.total, page);
+                    $("#total").html(data.responseData.total);   // id="total" 요소의 <요소>문자</요소> html 의 문자를 설정한다.
+                    $.showItemList(data.responseData.dataList);
+                    $.makePageUI(data.responseData.total, page);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 // ajax 의 요청이 실패하면 실행한다.
@@ -257,36 +258,36 @@
             });
         }
 
-        $.showBoardList = function (boardList) {
-            // boardList 매개변수는 배열이다.
-            if (boardList == null) {
+        $.showItemList = function (itemList) {
+            // itemList 매개변수는 배열이다.
+            if (itemList == null) {
                 return;
             }
-            const list = $("#boardList");
-            // id="boardList" 요소 객체를 가져온다.
+            const list = $("#itemList");
+            // id="itemList" 요소 객체를 가져온다.
             list.children().remove();
             // list 요소의 자식을 모두 삭제한다.
-            for (let i = 0; i < boardList.length; i++) {
-                let id = boardList[i].id;
-                let name = boardList[i].name;
-                let content = boardList[i].content;
-                let createDt = boardList[i].createDt;
-                let createId = boardList[i].createId;
-                let viewQty = boardList[i].viewQty;
-                let strLi = "<li><div onClick='$.viewBoard(" + id + ");' class='row'>"
+            for (let i = 0; i < itemList.length; i++) {
+                let id = itemList[i].id;
+                let name = itemList[i].name;
+                let content = itemList[i].content;
+                let createDt = itemList[i].createDt;
+                let createId = itemList[i].createId;
+                let viewQty = itemList[i].viewQty;
+                let strLi = "<li><div onClick='$.viewItem(" + id + ");' class='row'>"
                     + "<span class='col-md-8 d-flex justify-content-start'>" + name + "</span>"
                     + "<span class='col-md-2 d-flex justify-content-center'>" + createDt + "</span>"
                     + "<span class='col-md-1 d-flex justify-content-start'>" + createId + "</span>"
                     + "<span class='col-md-1 d-flex justify-content-end'>" + viewQty + "</span>"
                     + "</div></li>";
                 list.append(strLi);
-                // boardList 배열의 요소들의 id 와 name 값을 이용하여
+                // itemList 배열의 요소들의 id 와 name 값을 이용하여
                 // <li><div><span>...</span>..</div></li> html 요소를 만드는
                 // list 요소의 자식으로 append 한다.
             }
         }
 
-        $.viewBoard = function(id) {
+        $.viewItem = function (id) {
             if (id <= 0) {
                 return;
             }
@@ -298,8 +299,9 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.getBoardFiles(id);
-                    $.showBoardInfo(data.result);
+                    $.viewBoardFiles(id);
+                    $.getBoardCommentList(id, true);
+                    $.showItemInfo(data.responseData);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -307,7 +309,7 @@
             });
         }
 
-        $.showBoardInfo = function (item) {
+        $.showItemInfo = function (item) {
             if (item == null) {
                 return;
             }
@@ -326,19 +328,20 @@
             $("#showViewModalButton").trigger("click");
         }
 
-        $.getBoardFiles = function (id) {
+        $.viewBoardFiles = function (id) {
             if (id <= 0) {
                 return;
             }
             $.ajax({
-                url: "/api/v1/board/files/board/" + id,
-                type: "GET",
+                url: "/api/v1/sbfile/findbyboardid",
+                type: "POST",
                 datatype: "JSON",
-                contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식
+                data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.showBoardFiles(data.result);
+                    $.showBoardFiles(data.responseData);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -348,13 +351,12 @@
 
         let fileArrayView = new Array();
         let fileArrayModity = new Array();
-
-        $.showBoardFiles = function (list) {
-            if (list == null) {
+        $.showBoardFiles = function (fileList) {
+            if (fileList == null) {
                 return;
             }
             let html = "";
-            fileArrayView = list;
+            fileArrayView = fileList;
             $("#fileListView").children().remove();
             for ( const file of fileArrayView ) {
                 let id = file.id;
@@ -363,11 +365,11 @@
                 let uniqName = file.uniqName;
                 let fileType = file.fileType;
                 let size = file.length;
-                html += "<div id='fileView_" + id + "'>";
-                html += "<div class='filename' onclick=\"$.downloadFile('" + tbl + "', '" + name + "'" +
+                html += "<div id='fileView_" + id + "' class='row'>";
+                html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "'" +
                     ", '" + uniqName + "', '" + fileType + "')\">" + name + ", " + size + "</div>";
-                html += "<div onclick='$.downloadFileId(" + id + ")'>※</div>";
-                html += "<div onclick='$.deleteFileId(" + id + ")'>Ｘ</div>";
+                html += "<div class='col-md-3' onclick='$.downloadFileId(" + id + ")'>※</div>";
+                html += "<div class='col-md-3' onclick='$.deleteFileId(" + id + ")'>Ｘ</div>";
                 html += "</div>";
             }
             $("#fileListView").append(html);
@@ -378,15 +380,16 @@
                 || uniqName === undefined || uniqName === '' || fileType === undefined || fileType === '') {
                 return;
             }
-            document.location.href = "/api/v1/board/file/" + tbl + "/" + name + "/" + uniqName + "/" + fileType;
+            let href = "/api/v1/sbfile/downloadfile/" + tbl + "/" + name + "/" + uniqName + "/" + fileType;
+            window.open(href);
         }
 
         $.downloadFileId = function (id) {
             if (id === undefined || id <= 0) {
                 return;
             }
-            document.location.href = "/api/v1/board/fileId/" + id;
-            // ISbFileService findById 필요하다.
+            let href = "/api/v1/sbfile/downloadfileid/" + id;
+            window.open(href);            // ISbFileService findById 필요하다.
         }
 
         $.deleteFileId = function (id) {
@@ -410,17 +413,17 @@
             let sClass = "btn btn-success rounded-pill";
 
             $("#pageDiv").children().remove();
-            $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchBoardList("
+            $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchItemList("
                 + prev + ");'>Prev</a> ");
             for (let i = startPage; i <= endPage; i++) {
                 if (paramPage == i) {
                     sClass = "btn btn-primary rounded-pill";
                 }
-                $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchBoardList("
+                $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchItemList("
                     + i + ");'>" + i + "</a> ");
                 sClass = "btn btn-success rounded-pill";
             }
-            $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchBoardList("
+            $("#pageDiv").append(" <a class='" + sClass + "' onclick='$.searchItemList("
                 + next + ");'>Next</a> ");
         }
 
@@ -445,6 +448,162 @@
             }
             return ~~(totPage);
         }
+
+        // 댓글 추가
+        $.addComment = function() {
+            let id = $("#id2").val();
+            let comment = $("#comment").val();
+            if (!confirm("댓글을 추가 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/boardcomment",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"comment": comment, "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                $("#comment").val("");
+                $.getBoardCommentList(id, true);
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("댓글 추가를 실패했습니다. " + message);
+            });
+        }
+
+        // 댓글 조회
+        $.getBoardCommentList = function (id, clear) {
+            if (id <= 0) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/boardcomment/findbyboardid",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                if (status === "success") {
+                    $.showBoardCommentList(clear, data.responseData);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("댓글 보기 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        // 댓글 표시
+        $.showBoardCommentList = function (clear, commentList) {
+            if (commentList == null) {
+                return;
+            }
+            if (clear) {
+                $("#commentList").children().remove();
+            }
+            let html = "";
+            for (const commentItem of commentList) {
+                let id = commentItem.id;
+                let comment = commentItem.comment;
+                let commentId = commentItem.commentId;
+                let likeQty = commentItem.likeQty;
+                let createDt = commentItem.createDt;
+                let createId = commentItem.createId;
+                html += "<div id='likeList_" + id + "' class='row'>";
+                html += "<div class='commentListDiv col-md-6'>" + comment + "</div>";
+                html += "<div class='commentListDiv col-md-2'>" + createDt + "</div>";
+                html += "<div class='commentListDiv col-md-1'>" + createId + "</div>";
+                if ( commentId === undefined || commentId === null ) {
+                    html += "<div class='col-md-1'><img id='heartIcon' src='/svg/heartOff.svg' width='20px' alt='Like' onClick='$.likeComment(" + id + ", this);'/></div>";
+                } else {
+                    html += "<div class='col-md-1'><img id='heartIcon' src='/svg/heartOn.svg' width='20px' alt='Like' onClick='$.likeComment(" + id + ", this);'/></div>";
+                }
+                html += "<div class='col-md-1' onclick='$.deleteComment(" + id + ")'> Ｘ </div>";
+                html += "<div class='col-md-1' id='likeListQty_" + id + "'> " + likeQty + " </div>";
+                html += "</div>";
+            }
+            $("#commentList").append(html);
+        }
+
+        // 댓글 좋아요
+        $.likeComment = (id, heartIcon) => {
+            if (id <= 0) {
+                return;
+            }
+            let src = $(heartIcon).attr("src");
+            let bOff = src.includes("Off");
+            if (bOff) {
+                $.ajax({
+                    url: "/api/v1/boardcomment/like/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $(heartIcon).attr("src", "/svg/heartOn.svg");
+                        $.showCommentLikeItem(id, data.responseData.likeQty);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("Like 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            } else {
+                $.ajax({
+                    url: "/api/v1/boardcomment/unlike/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $(heartIcon).attr("src", "/svg/heartOff.svg");
+                        $.showCommentLikeItem(id, data.responseData.likeQty);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("UnLike 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            }
+        }
+
+        // 댓글 좋아요 갯수 출력
+        $.showCommentLikeItem = (id, count) => {
+            $("#likeListQty_" + id).text(count);
+        }
+
+        // 댓글 삭제
+        $.deleteComment = (id) => {
+            if (id <= 0) {
+                return;
+            }
+            if (!confirm("댓글을 삭제 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/boardcomment/deleteFlag/" + id,
+                type: "DELETE",
+                datatype: "JSON",
+                data: JSON.stringify({"id": id, "deleteFlag": true}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                if (status === "success") {
+                    $.deleteCommentLikeItem(id);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("댓글 삭제 실패 했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        // 댓글 삭제 표시
+        $.deleteCommentLikeItem = (id) => {
+            $("#likeList_" + id).remove();
+        }
+
         $.addInsert = function () {
             let name = $("#name").val();
             let content = $("#content").val();
@@ -471,10 +630,10 @@
                 $("#searchName").val("");
                 fileArrayAdd = new Array();
                 $("#fileListAdd").children().remove();
+                $.searchItemList(1);
                 $("#id").val("");
                 $("#name").val("");
                 $("#content").val("");
-                $.searchBoardList(1);
                 $(".modalCloseButton").trigger("click");
                 // class="modalCloseButton" 요소를 클릭하는 이벤트를 발생한다.
             }).fail(function (jqXHR, status, errorThrown) {
@@ -519,7 +678,7 @@
             formData.append("sbfiles", new Blob([JSON.stringify(fileArrayView)], {type:"application/json"}));
             // 기존 게시글의 첨부파일들에서 삭제여부 배열
             $.ajax({
-                url: "/api/v1/board",
+                url: "/api/v1/board/" + id,
                 type: "PATCH",
                 datatype: "JSON",
                 data: formData, // JSON.stringify({"id": id, "name": name, "content": content}),
@@ -530,7 +689,7 @@
                 // update 성공 완료시
                 fileArrayModity = new Array();
                 $("#fileListView").children().remove();
-                $.searchBoardList(page);
+                $.searchItemList(page);
                 $("#id2").val("");
                 $("#name2").val("");
                 $("#content2").val("");
@@ -550,7 +709,7 @@
                 return;
             }
             $.ajax({
-                url: "/api/v1/board/delflag",
+                url: "/api/v1/board/deleteFlag/" + id,
                 type: "DELETE",
                 datatype: "JSON",
                 data: JSON.stringify({"id": id, "deleteFlag": true}),
@@ -558,7 +717,9 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // delete 성공 완료시
-                $.doneDelete();
+                if (status === "success") {
+                    $.doneDelete();
+                }
                 // 앞의 문장이 비동기 통신처리 하므로 앞의 문장이 끝날때까지 기다리지 않고 바로 실행하므로 아래의 로직이 제대로 동작하지 않는다.
                 // total = $.doneDelete();
                 // let totPage = ~~((total + rowsOnePage - 1) / rowsOnePage);
@@ -582,24 +743,26 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 // 삭제 후에 검색식과 total 로 계산해서 현재 페이지를 page-1 해야 할지 결정 한다.
-                total = data.result;
-                let totPage = ~~((total + rowsOnePage - 1) / rowsOnePage);
-                if ( totPage < page ) {
-                    page = totPage;
+                if (status === "success") {
+                    total = data.responseData;
+                    let totPage = ~~((total + rowsOnePage - 1) / rowsOnePage);
+                    if (totPage < page) {
+                        page = totPage;
+                    }
+                    // alert("delete : total=" + total + ", page=" + page);
+                    $.searchItemList(page);
+                    $("#id2").val("");
+                    $("#name2").val("");
+                    $("#content2").val("");
+                    $(".modalCloseButton").trigger("click");
                 }
-                // alert("delete : total=" + total + ", page=" + page);
-                $.searchBoardList(page);
-                $("#id2").val("");
-                $("#name2").val("");
-                $("#content2").val("");
-                $(".modalCloseButton").trigger("click");
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("삭제 후 새로고침을 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
 
-        $.likeBoard = function () {
+        $.likeItem = function () {
             let heartIcon = $("#heartIcon");
             let src = heartIcon.attr("src");
             let bOff = src.includes("Off");
@@ -616,7 +779,7 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        $.showBoardInfo(data.result);
+                        $.showItemInfo(data.responseData);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -631,7 +794,7 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        $.showBoardInfo(data.result);
+                        $.showItemInfo(data.responseData);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -669,6 +832,21 @@
             }
             $("#fileModity").val("");
         }
+
+        function validation(obj) {
+            if (obj.name.length > 100) {
+                alert("파일명이 100자 이상인 파일은 제외되었습니다.");
+                return false;
+            } else if (obj.size > (100 * 1024 * 1024)) {
+                alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
+                return false;
+            } else if (obj.name.lastIndexOf('.') === -1) {
+                alert("확장자가 없는 파일은 제외되었습니다.");
+                return false;
+            } else {
+                return true;
+            }
+        }
     </script>
 </head>
 <body>
@@ -678,13 +856,18 @@
             <div>
                 <label for="searchName">검색이름</label><input id="searchName" name="searchName" type="text" value=""/>
                 <input id="page" name="page" type="hidden" value=""/>
-                <button onclick="$.searchBoardList(1);">검색</button>
+                <button onclick="$.searchItemList(1);">검색</button>
             </div>
             <div>
                 게시판 목록
             </div>
             <ul>
                 <li>
+                    <span>id
+                        <button onclick="$.idAsc();">△</button>
+                        <button onclick="$.idDesc();">▽</button>
+                    </span>
+                    <span> : </span>
                     <span>name
                         <button onclick="$.nameAsc();">△</button>
                         <button onclick="$.nameDesc();">▽</button>
@@ -710,7 +893,7 @@
                     </span>
                 </li>
             </ul>
-            <ul id="boardList">
+            <ul id="itemList">
             </ul>
             <div>total : <span id="total"></span></div>
             <button id="showAddModalButton">추가</button>
@@ -769,7 +952,7 @@
                         <label for="viewQty2">보기</label> <input id="viewQty2" readonly/>
                     </div>
                     <div class="col-6">
-                        <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeBoard();" />
+                        <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeItem();"/>
                         <span id="likeQty2"></span>
                     </div>
                 </div>
@@ -785,6 +968,11 @@
                     <button class="modalCloseButton">Close</button>
                 </div>
             </div>
+            <fieldset>
+                <label for="comment"></label> <input type="text" id="comment" name="comment" maxlength="100"/>
+                <button id="addComment" onclick="$.addComment();">댓글추가</button>
+            </fieldset>
+            <div id="commentList"></div>
         </div>
         <div class="modal_bg" style="display: none"></div>
     </div>

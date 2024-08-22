@@ -14,14 +14,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Slf4j
 @Controller
 @RequestMapping("/")
 public class IndexController {
+    @Autowired
+    private IMemberService memberService;
 
     @GetMapping("")
-    private String index() {
+    private String index(Model model, @SessionAttribute(name = SecurityConfig.LOGINUSER, required = false) String nickname) {
+        if ( nickname != null ) {
+            IMember loginUser = this.memberService.findByNickname(nickname);
+            model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
+        }
         return "index";
     }
 

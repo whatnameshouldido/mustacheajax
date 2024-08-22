@@ -18,7 +18,9 @@ public class AllControllerAdvice {
     private IMemberService memberService;
 
     private final String[] authUrls = new String[]{
-            "/ct"
+            "/api"
+            , "/member"
+            , "/ct"
             , "/catajx"
             , "/catweb"
             , "/admin"
@@ -29,12 +31,12 @@ public class AllControllerAdvice {
 
     @ModelAttribute // @ControllerAdvice, @ModelAttribute 이 단어가 있어야지만 모든 주소 요청시 가로챌수 있다.
     public void addModel( HttpServletRequest request, Model model
-                          , @SessionAttribute(name = SecurityConfig.LOGINUSER, required = false) String loginId ) {
+                          , @SessionAttribute(name = SecurityConfig.LOGINUSER, required = false) String nickname ) {
         String url = request.getRequestURI();
         String bFind = Arrays.stream(this.authUrls)
                 .filter(url::contains).findFirst().orElse(null);
-        if ( bFind != null && loginId != null ) {
-            IMember loginUser = this.memberService.findByLoginId(loginId);
+        if ( bFind != null && nickname != null ) {
+            IMember loginUser = this.memberService.findByNickname(nickname);
             model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
         }
     }

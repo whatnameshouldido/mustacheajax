@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SbLikeServiceImpl implements ISbLikeService {
     @Autowired
-    private ISbLikeMybatisMapper boardLikeMybatisMapper;
+    private ISbLikeMybatisMapper sbLikeMybatisMapper;
 
     @Override
     public ISbLike insert(CUDInfoDto info, ISbLike dto) {
@@ -16,7 +16,7 @@ public class SbLikeServiceImpl implements ISbLikeService {
         }
         SbLikeDto insert = SbLikeDto.builder().id(0L).build();
         insert.copyFields(dto);
-        boardLikeMybatisMapper.insert(insert);
+        sbLikeMybatisMapper.insert(insert);
         return insert;
     }
 
@@ -47,7 +47,7 @@ public class SbLikeServiceImpl implements ISbLikeService {
                 || dto.getBoardId() == null || dto.getBoardId() <= 0 ) {
             return false;
         }
-        this.boardLikeMybatisMapper.deleteByTableUserBoard(dto);
+        this.sbLikeMybatisMapper.deleteByTableUserBoard(dto);
         return true;
     }
 
@@ -60,7 +60,7 @@ public class SbLikeServiceImpl implements ISbLikeService {
         }
         SbLikeDto search = SbLikeDto.builder().build();
         search.copyFields(searchDto);
-        Integer count = this.boardLikeMybatisMapper.countByTableUserBoard(search);
+        Integer count = this.sbLikeMybatisMapper.countByTableUserBoard(search);
         return count;
     }
 }

@@ -21,11 +21,14 @@ public class AdminController {
     private IMemberService memberService;
 
     @GetMapping("/infoCookie")
-    private String showInfoCookie(Model model, @CookieValue(name =" loginId", required = false) String loginId) {
-        if ( loginId == null ) {
+    private String showInfoCookie(Model model, @CookieValue(value = SecurityConfig.LOGINUSER, required = false) String loginKeyName) {
+        if ( loginKeyName == null ) {
             return "redirect:/";
         }
-        IMember loginUser = memberService.findByLoginId(loginId);
+        IMember loginUser = this.memberService.findByNickname(loginKeyName);
+        if ( loginUser == null ) {
+            return "redirect:/";
+        }
         if ( !loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
             return "redirect:/";
         }

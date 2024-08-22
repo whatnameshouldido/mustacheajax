@@ -1,6 +1,7 @@
 package com.studymavernspringboot.mustachajax.filecntl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,8 @@ import java.nio.file.Paths;
 @Slf4j
 @Service
 public class FileCtrlService {
-    private final String uploadDir = "Z:/home/files";
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadDir;
 
     private void checkDirectory(String directory) throws IOException {
         Path path = Paths.get(directory);

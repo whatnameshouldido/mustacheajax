@@ -29,6 +29,7 @@ public class BoardWebController {
         if ( loginUser == null ) {
             return "redirect:/";
         }
+        model.addAttribute("boardTbl", new BoardDto().getTbl());
         return "board/board_ajx_list";
     }
 }
