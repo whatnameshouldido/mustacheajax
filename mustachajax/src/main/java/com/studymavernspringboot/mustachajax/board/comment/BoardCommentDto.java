@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardCommentDto extends BaseDto implements com.studymavernspringboot.mustachajax.board.comment.IBoardComment {
+public class BoardCommentDto extends BaseDto implements IBoardComment {
     private Long id;
     @Size(min = 4, max = 1000, message = "댓글은 10~1000자 입니다.")
     private String comment;

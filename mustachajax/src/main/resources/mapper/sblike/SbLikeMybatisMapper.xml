@@ -5,25 +5,25 @@
 
     <insert id="insert" parameterType="SbLikeDto" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sblike_tbl ( tbl
-        , nickname
-        , boardId)
+                              , createId
+                              , boardId)
         VALUES ( #{tbl}
-        , #{nickname}
-        , #{boardId})
+               , #{createId}
+               , #{boardId})
     </insert>
 
     <delete id="deleteByTableUserBoard" parameterType="SbLikeDto">
         DELETE FROM sblike_tbl
         WHERE tbl = #{tbl}
-        AND nickname = #{nickname}
-        AND boardId = #{boardId}
+          AND createId = #{createId}
+          AND boardId = #{boardId}
     </delete>
 
     <select id="countByTableUserBoard" resultType="Integer" parameterType="SbLikeDto">
         SELECT count(*)
         FROM sblike_tbl
         WHERE tbl = #{tbl}
-        AND nickname = #{nickname}
-        AND boardId = #{boardId}
+          AND createId = #{createId}
+          AND boardId = #{boardId}
     </select>
 </mapper>

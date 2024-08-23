@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CommentLikeServiceImpl implements com.studymavernspringboot.mustachajax.commentlike.ICommentLikeService {
+public class CommentLikeServiceImpl implements ICommentLikeService {
     @Autowired
-    private com.studymavernspringboot.mustachajax.commentlike.ICommentLikeMybatisMapper commentLikeMybatisMapper;
+    private ICommentLikeMybatisMapper commentLikeMybatisMapper;
 
     @Override
     public ICommentLike insert(CUDInfoDto info, ICommentLike dto) {
@@ -43,7 +43,7 @@ public class CommentLikeServiceImpl implements com.studymavernspringboot.mustach
     @Override
     public Boolean deleteByCommentTableUserBoard(CommentLikeDto dto) {
         if ( dto == null || dto.getCommentTbl() == null || dto.getCommentTbl().isEmpty()
-                || dto.getNickname() == null || dto.getNickname().isEmpty()
+                || dto.getCreateId() == null
                 || dto.getCommentId() == null || dto.getCommentId() <= 0 ) {
             return false;
         }
@@ -54,7 +54,7 @@ public class CommentLikeServiceImpl implements com.studymavernspringboot.mustach
     @Override
     public Integer countByCommentTableUserBoard(ICommentLike searchDto) {
         if ( searchDto == null || searchDto.getCommentTbl() == null || searchDto.getCommentTbl().isEmpty()
-                || searchDto.getNickname() == null || searchDto.getNickname().isEmpty()
+                || searchDto.getCreateId() == null
                 || searchDto.getCommentId() == null || searchDto.getCommentId() <= 0 ) {
             return 0;
         }

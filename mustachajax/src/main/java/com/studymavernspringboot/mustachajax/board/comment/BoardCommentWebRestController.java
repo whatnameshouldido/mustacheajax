@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping("/api/v1/boardcomment")
 public class BoardCommentWebRestController implements ICommonRestController<BoardCommentDto> {
     @Autowired
-    private com.studymavernspringboot.mustachajax.board.comment.IBoardCommentService boardCommentService;
+    private IBoardCommentService boardCommentService;
 
     @Autowired
     private ICommentLikeService commentLikeService;
@@ -231,7 +231,7 @@ public class BoardCommentWebRestController implements ICommonRestController<Boar
         }
         CommentLikeDto boardLikeDto = CommentLikeDto.builder()
                 .commentTbl(new BoardCommentDto().getTbl())
-                .nickname(loginUser.getNickname())
+                .createId(loginUser.getId())
                 .commentId(id)
                 .build();
         Integer likeCount = this.commentLikeService.countByCommentTableUserBoard(boardLikeDto);

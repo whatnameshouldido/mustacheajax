@@ -272,12 +272,12 @@
                 let name = itemList[i].name;
                 let content = itemList[i].content;
                 let createDt = itemList[i].createDt;
-                let createId = itemList[i].createId;
+                let createName = itemList[i].createName;
                 let viewQty = itemList[i].viewQty;
                 let strLi = "<li><div onClick='$.viewItem(" + id + ");' class='row'>"
                     + "<span class='col-md-8 d-flex justify-content-start'>" + name + "</span>"
                     + "<span class='col-md-2 d-flex justify-content-center'>" + createDt + "</span>"
-                    + "<span class='col-md-1 d-flex justify-content-start'>" + createId + "</span>"
+                    + "<span class='col-md-1 d-flex justify-content-start'>" + createName + "</span>"
                     + "<span class='col-md-1 d-flex justify-content-end'>" + viewQty + "</span>"
                     + "</div></li>";
                 list.append(strLi);
@@ -510,11 +510,11 @@
                 let commentId = commentItem.commentId;
                 let likeQty = commentItem.likeQty;
                 let createDt = commentItem.createDt;
-                let createId = commentItem.createId;
+                let createName = commentItem.createName;
                 html += "<div id='likeList_" + id + "' class='row'>";
                 html += "<div class='commentListDiv col-md-6'>" + comment + "</div>";
                 html += "<div class='commentListDiv col-md-2'>" + createDt + "</div>";
-                html += "<div class='commentListDiv col-md-1'>" + createId + "</div>";
+                html += "<div class='commentListDiv col-md-1'>" + createName + "</div>";
                 if ( commentId === undefined || commentId === null ) {
                     html += "<div class='col-md-1'><img id='heartIcon' src='/svg/heartOff.svg' width='20px' alt='Like' onClick='$.likeComment(" + id + ", this);'/></div>";
                 } else {

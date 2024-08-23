@@ -5,17 +5,17 @@
 
     <insert id="insert" parameterType="SbLikeDto" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO comment_like_tbl ( commentTbl
-                              , nickname
+                              , createId
                               , commentId)
         VALUES ( #{commentTbl}
-               , #{nickname}
+               , #{createId}
                , #{commentId})
     </insert>
 
     <delete id="deleteByCommentTableUserBoard" parameterType="SbLikeDto">
         DELETE FROM comment_like_tbl
         WHERE commentTbl = #{commentTbl}
-          AND nickname = #{nickname}
+          AND createId = #{createId}
           AND commentId = #{commentId}
     </delete>
 
@@ -23,7 +23,7 @@
         SELECT count(*)
         FROM comment_like_tbl
         WHERE commentTbl = #{commentTbl}
-          AND nickname = #{nickname}
+          AND createId = #{createId}
           AND commentId = #{commentId}
     </select>
 </mapper>
