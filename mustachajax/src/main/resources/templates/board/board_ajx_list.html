@@ -317,6 +317,8 @@
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
             $("#name2").val(item.name);
             $("#content2").val(item.content);
+            $("#createName").text(item.createName);
+            $("#createDt").text(item.createDt);
             $("#viewQty2").val(item.viewQty);
             $("#likeQty2").text(item.likeQty);
             let count = item.deleteDt;
@@ -957,6 +959,12 @@
                     </div>
                 </div>
             </fieldset>
+            <div class="row">
+                <div class="col-md-1">작성자</div>
+                <div id="createName" class="createInfo col-md-5"></div>
+                <div class="col-md-1">작성일</div>
+                <div id="createDt" class="createInfo col-md-5"></div>
+            </div>
             <div class="row">
                 <div class="col-4">
                     <button id="updateButton">수정</button>
