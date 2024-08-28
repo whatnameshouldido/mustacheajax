@@ -1,5 +1,7 @@
 package com.studymavernspringboot.mustachajax.board;
 
+import com.studymavernspringboot.mustachajax.commons.exception.IdNotFoundException;
+import com.studymavernspringboot.mustachajax.commons.exception.LoginAccessException;
 import com.studymavernspringboot.mustachajax.sbfile.SbFileDto;
 import com.studymavernspringboot.mustachajax.sblike.SbLikeDto;
 import com.studymavernspringboot.mustachajax.sblike.ISbLikeService;
@@ -9,9 +11,6 @@ import com.studymavernspringboot.mustachajax.commons.dto.ResponseDto;
 import com.studymavernspringboot.mustachajax.commons.dto.SearchAjaxDto;
 import com.studymavernspringboot.mustachajax.commons.inif.ICommonRestController;
 import com.studymavernspringboot.mustachajax.member.IMember;
-import com.studymavernspringboot.mustachajax.member.MemberRole;
-import com.studymavernspringboot.mustachajax.sbfile.ISbFileService;
-import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,9 +32,6 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     @Autowired
     private ISbLikeService sbLikeService;
 
-    @Autowired
-    private ISbFileService sbFileService;
-
     @Override
     public ResponseEntity<ResponseDto> insert(Model model, @RequestPart(value = "boardDto") BoardDto dto) {
         return null;
@@ -47,20 +43,15 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             , @RequestPart(value="files", required = false) List<MultipartFile> files
     ) {
         try {
-            if (dto == null) {
-                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
-            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
-            IBoard result = this.boardService.insert(cudInfoDto, dto);
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            IBoard result = this.boardService.insert(cudInfoDto, dto, files);
             if (result == null) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }
-            this.sbFileService.insertFiles(result, files);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -73,7 +64,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto> update(Model model, @PathVariable Long id
+    public ResponseEntity<ResponseDto> update(Model model, @Validated @PathVariable Long id
             , @Validated @RequestPart(value="boardDto") BoardDto dto
             , @RequestPart(value="sbfiles", required = false) List<SbFileDto> sbFileDtoList
             , @RequestPart(value="files", required = false) List<MultipartFile> files) {
@@ -82,24 +73,16 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             IBoard find = this.boardService.findById(id);
-            if (find == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            } else if (!loginUser.getRole().equals(MemberRole.ADMIN.toString()) && !loginUser.getId().equals(find.getCreateId())) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888889, "관리자와 본인만 수정 가능", null);
-            }
-            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
-            IBoard result = this.boardService.update(cudInfoDto, dto);
-            if (result == null) {
-                return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000021, "서버 수정 에러", null);
-            }
-            this.sbFileService.updateFiles(sbFileDtoList);
-            this.sbFileService.insertFiles(result, files);
+            CUDInfoDto cudInfoDto = makeResponseCheckSelfOrAdmin(model, find);
+            IBoard result = this.boardService.update(cudInfoDto, dto, sbFileDtoList, files);
             ResponseDto res = ResponseDto.builder().message("ok").responseData(result).build();
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -107,24 +90,21 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @DeleteMapping("/deleteFlag/{id}")
-    public ResponseEntity<ResponseDto> updateDeleteFlag(Model model, @PathVariable Long id, @RequestBody BoardDto dto) {
+    public ResponseEntity<ResponseDto> updateDeleteFlag(Model model, @Validated @PathVariable Long id, @Validated @RequestBody BoardDto dto) {
         try {
             if (id == null || dto == null || dto.getId() == null || dto.getId() <= 0 || !id.equals(dto.getId()) || dto.getDeleteFlag() == null) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             IBoard find = this.boardService.findById(id);
-            if (find == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            } else if (!loginUser.getRole().equals(MemberRole.ADMIN.toString()) && !loginUser.getId().equals(find.getCreateId())) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888889, "관리자와 본인만 삭제 가능", null);
-            }
-            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            CUDInfoDto cudInfoDto = makeResponseCheckSelfOrAdmin(model, find);
             Boolean result = this.boardService.updateDeleteFlag(cudInfoDto, dto);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -132,23 +112,21 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto> deleteById(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> deleteById(Model model, @Validated @PathVariable Long id) {
         try {
             if (id == null || id <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             IBoard find = this.boardService.findById(id);
-            if (find == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            } else if (!loginUser.getRole().equals(MemberRole.ADMIN.toString())) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888889, "관리자 권한 필요", null);
-            }
+            makeResponseCheckSelfOrAdmin(model, find);
             Boolean result = this.boardService.deleteById(id);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -156,22 +134,21 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto> findById(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> findById(Model model, @Validated @PathVariable Long id) {
         try {
             if (id == null || id <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
             this.boardService.addViewQty(id);
-            IBoard result = this.getBoardAndLike(id, loginUser);
-            if (result == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-
+            IBoard result = this.getBoardAndLike(id, cudInfoDto.getLoginUser());
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -179,17 +156,20 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @PostMapping("/countName")
-    public ResponseEntity<ResponseDto> countAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
+    public ResponseEntity<ResponseDto> countAllByNameContains(Model model, @Validated @RequestBody SearchAjaxDto searchAjaxDto) {
         try {
             if (searchAjaxDto == null) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
+            makeResponseCheckLogin(model);
             Integer result = this.boardService.countAllByNameContains(searchAjaxDto);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -197,23 +177,23 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @PostMapping("/searchName")
-    public ResponseEntity<ResponseDto> findAllByNameContains(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
+    public ResponseEntity<ResponseDto> findAllByNameContains(Model model, @Validated @RequestBody SearchAjaxDto searchAjaxDto) {
         try {
             if (searchAjaxDto == null) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
+            makeResponseCheckLogin(model);
             int total = this.boardService.countAllByNameContains(searchAjaxDto);
             List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
-            if (list == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "서버 검색 에러", null);
-            }
             searchAjaxDto.setTotal(total);
             searchAjaxDto.setDataList(list);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", searchAjaxDto);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -221,26 +201,22 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @GetMapping("/like/{id}")
-    public ResponseEntity<ResponseDto> addLikeQty(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> addLikeQty(Model model, @Validated @PathVariable Long id) {
         try {
             if (id == null || id <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             IBoard find = this.boardService.findById(id);
-            if (find == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
-            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
             this.boardService.addLikeQty(cudInfoDto, id);
-            IBoard result = this.getBoardAndLike(id, loginUser);
-            if (result == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
+            IBoard result = this.getBoardAndLike(id, cudInfoDto.getLoginUser());
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -248,26 +224,22 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     }
 
     @GetMapping("/unlike/{id}")
-    public ResponseEntity<ResponseDto> subLikeQty(Model model, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> subLikeQty(Model model, @Validated @PathVariable Long id) {
         try {
             if (id == null || id <= 0) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             IBoard find = this.boardService.findById(id);
-            if (find == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
-            IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
-            if (loginUser == null) {
-                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
-            }
-            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
             this.boardService.subLikeQty(cudInfoDto, id);
-            IBoard result = this.getBoardAndLike(id, loginUser);
-            if (result == null) {
-                return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
-            }
+            IBoard result = this.getBoardAndLike(id, cudInfoDto.getLoginUser());
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
@@ -276,9 +248,6 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
 
     private IBoard getBoardAndLike(Long id, IMember loginUser) {
         IBoard result = this.boardService.findById(id);
-        if ( result == null ) {
-            return null;
-        }
         SbLikeDto boardLikeDto = SbLikeDto.builder()
                 .tbl(new BoardDto().getTbl())
                 .createId(loginUser.getId())

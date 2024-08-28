@@ -299,7 +299,7 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.viewBoardFiles(id);
+                    $.getBoardFiles(id);
                     $.getBoardCommentList(id, true);
                     $.showItemInfo(data.responseData);
                 }
@@ -317,12 +317,12 @@
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
             $("#name2").val(item.name);
             $("#content2").val(item.content);
+            $("#viewQty2").val(item.viewQty);
             $("#createName").text(item.createName);
             $("#createDt").text(item.createDt);
-            $("#viewQty2").val(item.viewQty);
             $("#likeQty2").text(item.likeQty);
             let count = item.deleteDt;
-            if ( count === "0" ) {
+            if (count === "0") {
                 $("#heartIcon").attr("src", "/svg/heartOff.svg");
             } else {
                 $("#heartIcon").attr("src", "/svg/heartOn.svg");
@@ -330,7 +330,7 @@
             $("#showViewModalButton").trigger("click");
         }
 
-        $.viewBoardFiles = function (id) {
+        $.getBoardFiles = function (id) {
             if (id <= 0) {
                 return;
             }
@@ -906,14 +906,14 @@
         <div id="modal_box_add" style="display: none">
             <h2>Board Add</h2>
                 <fieldset>
-                    <div>
+                    <div class="row" style="display: none;">
                         <label for="id">ID</label> <input id="id" name="id" readonly type="text" value=""/>
                     </div>
-                    <div>
-                        <label for="name">Name</label> <input id="name" name="name" type="text" value=""/>
+                    <div class="row">
+                        <label for="name">제목</label> <input id="name" name="name" type="text" value=""/>
                     </div>
-                    <div>
-                        <label for="content">content</label> <textarea id="content" name="content"></textarea>
+                    <div class="row">
+                        <label for="content">본문</label> <textarea id="content" name="content"></textarea>
                     </div>
                     <div>
                         <label for="file">첨부파일</label>
@@ -933,21 +933,30 @@
         <div id="modal_box_view" style="display: none">
             <h2>Board Info</h2>
             <fieldset>
-                <div>
-                    <label for="id2">ID</label> <input id="id2" name="id2" readonly type="text" value=""/>
+                <div class="row" style="display: none;">
+                    <div class="col-md-1">ID</div>
+                    <div class="col-md-11"><input id="id2" name="id2" readonly type="text" value=""/></div>
                 </div>
-                <div>
-                    <label for="name2">Name</label> <input id="name2" name="name2" type="text" value=""/>
+                <div class="row">
+                    <div class="col-md-1">제목</div>
+                    <div class="col-md-11"><label for="name2"></label><input id="name2" name="name2" type="text" value=""/></div>
                 </div>
-                <div>
-                    <label for="content2">Name</label> <textarea id="content2" name="content2"></textarea>
+                <div class="row">
+                    <div class="col-md-1">본문</div>
+                    <div class="col-md-11"><label for="content2"></label><textarea id="content2" name="content2"></textarea></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">작성자</div>
+                    <div id="createName" class="crateInfo col-md-5"></div>
+                    <div class="col-md-1">작성일</div>
+                    <div id="createDt" class="crateInfo col-md-5"></div>
                 </div>
                 <div>
                     <div id="fileListView" class="file-list"></div>
                 </div>
                 <div>
-                    <label for="file">첨부파일</label>
-                    <input type="file" id="fileModity" name="file" onchange="$.addFileModity(this);" multiple />
+                    <div class="col-md-1">첨부파일</div>
+                    <div class="col-md-2"><input type="file" id="fileModity" name="file" onchange="$.addFileModity(this);" multiple /></div>
                 </div>
                 <div class="row">
                     <div class="col-6">
@@ -959,12 +968,6 @@
                     </div>
                 </div>
             </fieldset>
-            <div class="row">
-                <div class="col-md-1">작성자</div>
-                <div id="createName" class="createInfo col-md-5"></div>
-                <div class="col-md-1">작성일</div>
-                <div id="createDt" class="createInfo col-md-5"></div>
-            </div>
             <div class="row">
                 <div class="col-4">
                     <button id="updateButton">수정</button>

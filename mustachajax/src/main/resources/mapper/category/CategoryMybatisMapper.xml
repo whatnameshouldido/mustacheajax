@@ -4,14 +4,12 @@
 <mapper namespace="com.studymavernspringboot.mustachajax.category.ICategoryMybatisMapper">
     <!-- mapper namespace = "@Mapper로 선언된 클래스의 풀패키지.클래스 이름"-->
 
-
     <insert id="insert" parameterType="CategoryDto" useGeneratedKeys="true" keyProperty="id">
         <!-- <insert id="insert" CategoryMybatisMapper 클래스의 insert 메소드-->
         <!-- parameterType="CategoryDto" insert 메소드 의 매개변수 데이터 타입, 매개변수 1개 -->
         <!-- useGeneratedKeys="true" keyProperty="id컬럼명" id컬럼명의 번호를 증가해주고 리턴도 해준다 -->
-        INSERT INTO category_tbl(name)
-        VALUES(#{name})
-
+        INSERT INTO category_tbl ( name )
+        VALUES ( #{name} )
     </insert>
 
     <update id="update" parameterType="CategoryDto">
@@ -19,7 +17,6 @@
         <!-- parameterType="CategoryDto" insert 메소드 의 매개변수 데이터 타입, 매개변수 1개 -->
         UPDATE category_tbl SET name = #{name}
         WHERE id = #{id}
-
     </update>
 
     <delete id="deleteById">

@@ -1,8 +1,6 @@
 package com.studymavernspringboot.mustachajax.commentlike;
 
-import com.studymavernspringboot.mustachajax.commons.inif.IServiceCRUD;
 
-public interface ICommentLikeService extends IServiceCRUD<ICommentLike> {
-    Boolean deleteByCommentTableUserBoard(CommentLikeDto dto);
+public interface ICommentLikeService {
     Integer countByCommentTableUserBoard(ICommentLike searchDto);
 }

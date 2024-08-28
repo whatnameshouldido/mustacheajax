@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.sbfile;
 
 import com.studymavernspringboot.mustachajax.board.IBoard;
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
+import com.studymavernspringboot.mustachajax.commons.exception.IdNotFoundException;
 import com.studymavernspringboot.mustachajax.filecntl.FileCtrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ public class SbFileServiceImpl implements ISbFileService {
     private FileCtrlService fileCtrlService;
 
     @Override
-    public ISbFile insert(CUDInfoDto info, ISbFile dto) {
-        if ( dto == null ) {
+    public ISbFile insert(CUDInfoDto cudInfoDto, ISbFile dto) {
+        if (dto == null) {
             return null;
         }
         SbFileDto insert = SbFileDto.builder().build();
@@ -50,7 +51,7 @@ public class SbFileServiceImpl implements ISbFileService {
 
     @Override
     public Boolean deleteById(Long id) {
-        if ( id == null || id <= 0 ) {
+        if (id == null || id <= 0) {
             return false;
         }
         this.sbFileMybatisMapper.deleteById(id);
@@ -63,12 +64,15 @@ public class SbFileServiceImpl implements ISbFileService {
             return null;
         }
         SbFileDto find = this.sbFileMybatisMapper.findById(id);
+        if (find == null) {
+            throw new IdNotFoundException(String.format("Error : not found id = %d !", id));
+        }
         return find;
     }
 
     @Override
     public List<ISbFile> findAllByTblBoardId(ISbFile search) {
-        if ( search == null ) {
+        if (search == null) {
             return List.of();
         }
         SbFileDto dto = SbFileDto.builder().build();
@@ -92,31 +96,32 @@ public class SbFileServiceImpl implements ISbFileService {
             return false;
         }
         int ord = 0;
-        for ( MultipartFile file : files ) {
-            SbFileDto insert = SbFileDto.builder()
-                    .name(file.getOriginalFilename())
-                    .ord(ord++)
-                    .fileType(this.getFileType(Objects.requireNonNull(file.getOriginalFilename())))
-                    .uniqName(UUID.randomUUID().toString())
-                    .length(file.getSize())
-                    .tbl(boardDto.getTbl())
-                    .boardId(boardDto.getId())
-                    .build();
-            try {
+        try {
+            for ( MultipartFile file : files ) {
+                SbFileDto insert = SbFileDto.builder()
+                        .name(file.getOriginalFilename())
+                        .ord(ord++)
+                        .fileType(this.getFileType(Objects.requireNonNull(file.getOriginalFilename())))
+                        .uniqName(UUID.randomUUID().toString())
+                        .length(file.getSize())
+                        .tbl(boardDto.getTbl())
+                        .boardId(boardDto.getId())
+                        .build();
                 this.sbFileMybatisMapper.insert(insert);
                 this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName() + insert.getFileType());
-            } catch (Exception ex) {
-                log.error(ex.toString());
             }
+            return true;
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            throw new RuntimeException(ex);
         }
-        return true;
     }
 
     @Override
     public Boolean updateFiles(List<SbFileDto> sbFileDtoList) {
-        for ( ISbFile sbFileDto : sbFileDtoList ) {
+        for ( SbFileDto sbFileDto : sbFileDtoList ) {
             if (sbFileDto.getDeleteFlag()) {
-                this.sbFileMybatisMapper.updateDeleteFlag((SbFileDto) sbFileDto);
+                this.sbFileMybatisMapper.updateDeleteFlag(sbFileDto);
             }
         }
         return true;
@@ -124,7 +129,7 @@ public class SbFileServiceImpl implements ISbFileService {
 
     @Override
     public byte[] getBytesFromFile(ISbFile down) {
-        if(down == null) {
+        if ( down == null ) {
             return new byte[0];
         }
         byte[] result = this.fileCtrlService.downloadFile(down.getTbl(), down.getUniqName(), down.getFileType());
