@@ -14,7 +14,6 @@ public interface ICategoryMybatisMapper {
     CategoryDto findById(Long id);
 
     CategoryDto findByName(String name);
-
     List<CategoryDto> findAll();
 
     Integer countAllByNameContains(SearchAjaxDto searchAjaxDto);

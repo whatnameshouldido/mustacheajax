@@ -4,10 +4,7 @@ import com.studymavernspringboot.mustachajax.commons.dto.ResponseCode;
 import com.studymavernspringboot.mustachajax.commons.dto.ResponseDto;
 import com.studymavernspringboot.mustachajax.commons.exception.IdNotFoundException;
 import com.studymavernspringboot.mustachajax.commons.exception.LoginAccessException;
-import com.studymavernspringboot.mustachajax.commons.inif.ICommonRestController;
 import com.studymavernspringboot.mustachajax.commons.inif.IResponseController;
-import com.studymavernspringboot.mustachajax.member.IMember;
-import com.studymavernspringboot.mustachajax.security.config.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,16 +34,16 @@ public class SbFileWebRestController implements IResponseController {
             }
             makeResponseCheckLogin(model);
             List<ISbFile> result = this.sbFileService.findAllByTblBoardId(search);
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
         } catch (LoginAccessException ex) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
         } catch (IdNotFoundException ex) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 

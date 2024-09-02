@@ -73,8 +73,7 @@ public class LoginCookieController {
             if ( loginUser == null ) {
                 model.addAttribute("message", "로그인 실패 실패 했습니다. ID와 암호를 확인하세요");
                 return "login/fail";
-            }
-            if ( !loginUser.getActive() ) {
+            } else if ( !loginUser.getActive() ) {
                 model.addAttribute("message", "회원계정이 비활성 상태입니다, 관리자에게 문의 하세요");
                 return "login/fail";
             }
@@ -95,4 +94,13 @@ public class LoginCookieController {
     private String logout(HttpServletResponse response) {
         return "login/signout";
     }
+
+//    @GetMapping("/signout")
+//    private String signout(HttpSession session, HttpServletResponse response) {
+//        Cookie cookie = new Cookie("loginId", null);
+//        cookie.setMaxAge(0);
+//        response.addCookie(cookie);
+//        session.invalidate();
+//        return "login/signout";
+//    }
 }

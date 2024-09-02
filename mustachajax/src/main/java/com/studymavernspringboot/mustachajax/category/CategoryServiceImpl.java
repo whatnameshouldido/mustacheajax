@@ -76,9 +76,9 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
     }
 
     private boolean isValidInsert(ICategory category) {
-        if (category == null) {
+        if ( category == null ) {
             return false;
-        } else if (category.getName() == null || category.getName().isEmpty()) {
+        } else if ( category.getName() == null || category.getName().isEmpty() ) {
             return false;
         }
         return true;
@@ -87,7 +87,7 @@ public class CategoryServiceImpl implements ICategoryService<ICategory> {
     @Override
     public Boolean deleteById(Long id) {
         ICategory find = this.findById(id);
-        if (find == null) {
+        if ( find == null ) {
             return false;
         }
         this.categoryMybatisMapper.deleteById(id);

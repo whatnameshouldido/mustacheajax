@@ -26,7 +26,7 @@ public class CategoryWebRestController implements IResponseController {
     public ResponseEntity<ResponseDto> insert(@RequestBody CategoryDto dto) {
         // ResponseEntity<데이터형> : http 응답을 http 응답코드와 리턴데이터형으로 묶어서 응답한다.
         // @RequestBody CategoryDto dto : JSON 문자열로 요청을 받는다.
-        // 다만 JSON 문자열의 데이터가 CategoryDto 데이터형이어야한다.
+        //      다만 JSON 문자열의 데이터가 CategoryDto 데이터형이어야 한다.
         try {
             if ( dto == null ) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
@@ -36,10 +36,10 @@ public class CategoryWebRestController implements IResponseController {
             if ( result == null ) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -58,11 +58,11 @@ public class CategoryWebRestController implements IResponseController {
             if ( result == null ) {
                 return ResponseEntity.notFound().build(); // error 응답
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -76,11 +76,11 @@ public class CategoryWebRestController implements IResponseController {
             }
             Boolean result = this.categoryService.deleteById(id);
             // 최종 목적지인 Mybatis 쿼리를 DB 에 실행하고 결과를 리턴 받는다.
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -95,11 +95,11 @@ public class CategoryWebRestController implements IResponseController {
             if ( find == null ) {
                 return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, "데이터 검색 에러", null);
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", find);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", find);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -111,11 +111,11 @@ public class CategoryWebRestController implements IResponseController {
         try {
             List<ICategory> result = this.categoryService.getAllList();
             // 최종 목적지인 Mybatis 쿼리를 DB 에 실행하고 결과를 리턴 받는다.
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -138,11 +138,11 @@ public class CategoryWebRestController implements IResponseController {
             // 최종 목적지인 Mybatis 쿼리를 DB 에 실행하고 결과를 리턴 받는다.
             // countAllByNameContains 쿼리 문장을 만들때 searchName 값을 활용하여 쿼리 문장을 만들고 실행한다.
             // 데이터 행수를 리턴한다.
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", total);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", total);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 
@@ -176,11 +176,11 @@ public class CategoryWebRestController implements IResponseController {
             // SearchAjaxDto 응답결과에 total 을 추가한다.
             searchAjaxDto.setDataList(list);
             // SearchAjaxDto 응답결과에 List<ICategory> 을 추가한다.
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", searchAjaxDto);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", searchAjaxDto);
             // 200 OK 와 result 데이터를 응답한다.
         } catch ( Exception ex ) {
             log.error(ex.toString());
-            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 }
