@@ -1,8 +1,12 @@
 package com.studymavernspringboot.mustachajax.stomp;
 
+import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
+import com.studymavernspringboot.mustachajax.commons.exeption.LoginAccessException;
+import com.studymavernspringboot.mustachajax.commons.inif.IResponseController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,17 +17,23 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/stomp")
-public class StompRoomAjaxController {
+public class StompRoomAjaxController implements IResponseController {
     @Autowired
     private StompRoomService stompRoomService;
 
     @PostMapping("/create")
     public ResponseEntity<StompRoomDto> createStompRoom(Model model, @RequestBody StompRoomDto stompRoomDto) {
-        if (stompRoomDto == null) {
-            return ResponseEntity.badRequest().build();
+        try {
+            if (stompRoomDto == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            StompRoomDto newRoom = this.stompRoomService.insert(stompRoomDto.getRoomName());
+            return ResponseEntity.ok(newRoom);
+        } catch (LoginAccessException lae) {
+            log.error(lae.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        StompRoomDto newRoom = this.stompRoomService.insert(stompRoomDto.getRoomName(), stompRoomDto.getWriter());
-        return ResponseEntity.ok(newRoom);
     }
 
 }

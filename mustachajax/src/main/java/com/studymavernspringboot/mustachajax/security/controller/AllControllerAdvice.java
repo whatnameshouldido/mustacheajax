@@ -24,6 +24,7 @@ public class AllControllerAdvice {
             , "/user"
             , "/member"
             , "/board"
+            , "/stomp"
     };
 
 

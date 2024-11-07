@@ -24,4 +24,3 @@ public class StompConfiguration implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub");
     }
 }
-

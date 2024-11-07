@@ -1,5 +1,8 @@
 package com.studymavernspringboot.mustachajax.stomp;
 
+import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
+import com.studymavernspringboot.mustachajax.commons.exeption.LoginAccessException;
+import com.studymavernspringboot.mustachajax.commons.inif.IResponseController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,38 +17,57 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/stomp")
-public class StompRoomController {
+public class StompRoomController implements IResponseController {
     @Autowired
     private StompRoomService stompRoomService;
 
     @GetMapping("/list")
     public String stompRoomList(Model model) {
-        List<StompRoomDto> list = this.stompRoomService.findAll();
-        model.addAttribute("stompRoomList", list);
-        return "stomp/stomproomlist";
+        try {
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            List<StompRoomDto> list = this.stompRoomService.findAll();
+            model.addAttribute("stompRoomList", list);
+            return "stomp/stomproomlist";
+        } catch (LoginAccessException lae) {
+            log.error(lae.getMessage());
+            return "redirect:/";
+        }
     }
 
-//    @PostMapping("/create")
-//    public String createStompRoom(Model model, @RequestBody StompRoomDto stompRoomDto) {
-//        if (stompRoomDto == null) {
-//            return "redirect:/stomp/list";
-//        }
-//        StompRoomDto newRoom = this.stompRoomService.insert(stompRoomDto.getRoomName());
-//        return "redirect:/stomp/list";
-//    }
-
-    @PostMapping("/enter")   // GET ? 와 &
+    @PostMapping("/enter")
     public String enterStompRoom(Model model
             , HttpServletRequest request
             , @ModelAttribute StompRoomDto stompRoomDto
     ) {
-        if (stompRoomDto == null) {
-            return "redirect:/stomp/list";
+        try {
+            if (stompRoomDto == null) {
+                return "redirect:/stomp/list";
+            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            String writer = cudInfoDto.getLoginUser().getNickname();
+            StompRoomDto stompRoom = this.stompRoomService.findByRoomId(stompRoomDto.getRoomId());
+            if ( this.getIndexOfWriter(writer, stompRoom.getUserList()) >= 0 ) {
+                log.error("{} 이미 존재하는 대화명", writer);
+                return "redirect:/stomp/list";
+            }
+            model.addAttribute("stompRoomDto", stompRoom);
+            model.addAttribute("writer", writer);
+            String url = String.format("%s:%d", request.getServerName(), request.getServerPort());
+            model.addAttribute("hostUrl", url);
+            return "stomp/stomproomdetail";
+        } catch (LoginAccessException lae) {
+            log.error(lae.getMessage());
+            return "redirect:/";
         }
-        model.addAttribute("stompRoomDto", this.stompRoomService.findByRoomId(stompRoomDto.getRoomId()));
-        model.addAttribute("writer", stompRoomDto.getWriter());
-        String url = String.format("%s:%d", request.getServerName(), request.getServerPort());
-        model.addAttribute("hostUrl", url);
-        return "stomp/stomproomdetail";
+    }
+
+    private int getIndexOfWriter(String writer, List<String> userList) {
+        for (int i = 0; i < userList.size(); i++) {
+            String user = userList.get(i);
+            if (user.equals(writer)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

@@ -2,21 +2,17 @@ package com.studymavernspringboot.mustachajax.stomp;
 
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StompRoomService {
     private final Map<String, StompRoomDto> stompRoomDtoMap = new LinkedHashMap<>();
 
-    public StompRoomDto insert(String roomName, String writer) {
+    public StompRoomDto insert(String roomName) {
         StompRoomDto newRoom = StompRoomDto.builder()
                 .roomId(UUID.randomUUID().toString())
                 .roomName(roomName)
-                .writer(writer)
-                .count(0)
+                .userList(new ArrayList<>())
                 .build();
         stompRoomDtoMap.put(newRoom.getRoomId(), newRoom);
         return newRoom;

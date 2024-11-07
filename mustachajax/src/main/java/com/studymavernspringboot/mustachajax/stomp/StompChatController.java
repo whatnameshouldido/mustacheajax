@@ -28,9 +28,9 @@ public class StompChatController {
             return;
         }
         if ( StompMessageDto.StompMessageType.ENTER == stompMessageDto.getMsgType() ) {
-            stompRoom.setCount(stompRoom.getCount() + 1);
+            stompRoom.getUserList().add(stompMessageDto.getWriter());
         } else if ( StompMessageDto.StompMessageType.OUT == stompMessageDto.getMsgType() ) {
-            stompRoom.setCount(stompRoom.getCount() - 1);
+            stompRoom.getUserList().remove(stompMessageDto.getWriter());
         }
         if( stompRoom.getCount() < 1 ) {
             stompRoomService.deleteByRoomId(stompMessageDto.getRoomId());
