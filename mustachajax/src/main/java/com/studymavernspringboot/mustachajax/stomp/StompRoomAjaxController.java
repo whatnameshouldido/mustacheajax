@@ -1,7 +1,7 @@
 package com.studymavernspringboot.mustachajax.stomp;
 
 import com.studymavernspringboot.mustachajax.commons.dto.CUDInfoDto;
-import com.studymavernspringboot.mustachajax.commons.exeption.LoginAccessException;
+import com.studymavernspringboot.mustachajax.commons.exception.LoginAccessException;
 import com.studymavernspringboot.mustachajax.commons.inif.IResponseController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
