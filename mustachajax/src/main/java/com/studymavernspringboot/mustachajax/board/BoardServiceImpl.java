@@ -97,7 +97,7 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     private List<IBoard> getInterfaceList(List<BoardDto> list) {
-        if(list == null) {
+        if( list == null ) {
             return List.of();
         }
         List<IBoard> result = list.stream().map(item -> (IBoard)item).toList();

@@ -138,7 +138,7 @@
             });
 
             $("#rowsOnePage").change(function () {
-                rowsOnePage = $("#rowsOnePage").val();
+                rowsOnePage = $("#rowsOnePage").val() * 1;
                 $.searchItemList(1);
             });
         });

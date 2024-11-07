@@ -19,6 +19,7 @@ public class AllControllerAdvice {
 
     private final String[] authUrls = new String[]{
             "/api"
+            , "/catweb"
             , "/admin"
             , "/user"
             , "/member"

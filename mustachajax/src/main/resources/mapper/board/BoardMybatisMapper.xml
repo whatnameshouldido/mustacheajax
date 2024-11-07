@@ -22,10 +22,10 @@
 
     <update id="update" parameterType="BoardDto">
         UPDATE board_tbl
-            SET name = #{name}
-            , content = #{content}
-            , updateDt = #{updateDt}
-            , updateId = #{updateId}
+        SET name = #{name}
+          , content = #{content}
+          , updateDt = #{updateDt}
+          , updateId = #{updateId}
         WHERE id = #{id}
     </update>
 

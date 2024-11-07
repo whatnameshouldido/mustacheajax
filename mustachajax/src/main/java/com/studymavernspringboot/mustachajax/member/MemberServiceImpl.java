@@ -71,13 +71,16 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public Boolean updateDeleteFlag(CUDInfoDto cudInfoDto, IMember member) {
-        if ( member == null ) {
+        if ( member == null || member.getId() == null || member.getId() <= 0 ) {
             return false;
         }
-        MemberDto dto = MemberDto.builder().build();
-        dto.copyFields(member);
-        cudInfoDto.setDeleteInfo(dto);
-        this.memberMybatisMapper.updateDeleteFlag(dto);
+        MemberDto find = this.memberMybatisMapper.findById(member.getId());
+        if (find == null) {
+            throw new IdNotFoundException(String.format("Error : not found id = %d !", member.getId()));
+        }
+        find.copyFields(member);
+        cudInfoDto.setDeleteInfo(find);
+        this.memberMybatisMapper.updateDeleteFlag(find);
         return true;
     }
 
@@ -86,10 +89,10 @@ public class MemberServiceImpl implements IMemberService {
         if ( id == null || id <= 0 ) {
             return null;
         }
-//        IMember find = this.findById(id);
-//        if ( find == null ) {
-//            return false;
-//        }
+        MemberDto find = this.memberMybatisMapper.findById(id);
+        if (find == null) {
+            throw new IdNotFoundException(String.format("Error : not found id = %d !", id));
+        }
         this.memberMybatisMapper.deleteById(id);
         return true;
     }
