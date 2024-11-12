@@ -12,8 +12,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.0.25:3306/phonebook_db?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: phonebook_user
-    password: sangbong3!
+    username: pobyjun
+    password: rkdwnstj021210@
 
   # attachfile
   servlet:
