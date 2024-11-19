@@ -27,9 +27,9 @@ public class StompChatController {
         if (stompRoom == null) {
             return;
         }
-        if ( StompMessageDto.StompMessageType.ENTER == stompMessageDto.getMsgType() ) {
+        if ( StompMessageType.ENTER == stompMessageDto.getMsgType() ) {
             stompRoom.getUserList().add(stompMessageDto.getWriter());
-        } else if ( StompMessageDto.StompMessageType.OUT == stompMessageDto.getMsgType() ) {
+        } else if ( StompMessageType.OUT == stompMessageDto.getMsgType() ) {
             stompRoom.getUserList().remove(stompMessageDto.getWriter());
         }
         if( stompRoom.getCount() < 1 ) {

@@ -1,4 +1,4 @@
-package com.studymavernspringboot.mustachajax.stomp;
+package com.studymavernspringboot.mustachajax.stompevery;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StompMessageDto {
-    private StompMessageType msgType;
-    private String roomId;
+public class StompEveryRoomDto {
+    private Long id;
     private String writer;
-    private String message;
+    private String roomName;
+    private Boolean deleteFlag;
+    private Integer count;
 }

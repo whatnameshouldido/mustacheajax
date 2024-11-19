@@ -158,6 +158,7 @@
 
             $('#showAddModalButton').click(function () {
                 // id="modal_box_add" 요소와 class="modal_bg" 요소를 1000ms 동안 서서히 보여준다.
+                $("#content").summernote("reset");
                 $('#modal_box_add').fadeIn(1000);
                 $('.modal_bg').fadeIn(1000);
             });
