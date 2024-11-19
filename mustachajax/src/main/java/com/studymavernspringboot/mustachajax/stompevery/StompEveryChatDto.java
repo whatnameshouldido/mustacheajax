@@ -11,11 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StompEveryChatDto {
+public class StompEveryChatDto extends StompEveryMessageDto {
     private Long id;
-    private Long roomId;
     private String roomName;
-    private String writer;
-    private String msgTime;
-    private String message;
 }

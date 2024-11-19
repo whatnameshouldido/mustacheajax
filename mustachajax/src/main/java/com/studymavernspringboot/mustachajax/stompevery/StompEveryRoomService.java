@@ -2,6 +2,7 @@ package com.studymavernspringboot.mustachajax.stompevery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -9,6 +10,9 @@ import java.util.*;
 public class StompEveryRoomService {
     @Autowired
     private IStompEveryRoomMybatisMapper iStompEveryRoomMybatisMapper;
+
+    @Autowired
+    private IStompEveryChatMybatisMapper iStompEveryChatMybatisMapper;
 
     public StompEveryRoomDto insert(String roomName) {
         StompEveryRoomDto newRoom = StompEveryRoomDto.builder()
@@ -31,7 +35,9 @@ public class StompEveryRoomService {
         iStompEveryRoomMybatisMapper.update(dto);
     }
 
-    public void deleteByRoomId(Long id) {
+    @Transactional
+    public void deleteByRoomId(Long id, StompEveryChatDto chatDto) {
         iStompEveryRoomMybatisMapper.deleteFlagById(id);
+        iStompEveryChatMybatisMapper.insert(chatDto);
     }
 }

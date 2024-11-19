@@ -32,7 +32,7 @@
         socket.subscribe("/sub/stompevery/room/" + "{{stompEveryRoomDto.id}}", function(message) {
             let msgObj = JSON.parse(message.body);
             let msgUl = $("#msgUl");
-            let liHtml = `<li><span>${msgObj.writer}</span> &nbsp; : &nbsp; <span>${msgObj.message}</span></li>`;
+            let liHtml = `<li><span>${msgObj.msgTime}</span> <span>${msgObj.writer}</span> : <span>${msgObj.message}</span></li>`;
             msgUl.append(liHtml);
         });
         socket.send("/pub/stompevery/message", {}, JSON.stringify(
