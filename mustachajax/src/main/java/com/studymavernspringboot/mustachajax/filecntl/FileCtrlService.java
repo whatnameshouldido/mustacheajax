@@ -32,16 +32,20 @@ public class FileCtrlService {
         return true;
     }
 
-    public byte[] downloadFile(String tbl, String uniqName, String fileType) {
+    public byte[] downloadFile(String tbl, String uniqName) {
         byte[] bytes = null;
         try {
             this.checkDirectory(uploadDir + "/" + tbl);
-            Path path = Paths.get(uploadDir + "/" + tbl + "/" + uniqName + fileType);
+            Path path = Paths.get(uploadDir + "/" + tbl + "/" + uniqName);
             bytes = Files.readAllBytes(path);
         } catch (IOException ex) {
             log.error(ex.toString());
         }
         return bytes;
+    }
+
+    public byte[] downloadFile(String tbl, String uniqName, String fileType) {
+        return downloadFile(tbl, uniqName + fileType);
     }
 
     public Boolean deleteFile(String tbl, String uniqName, String fileType) {

@@ -17,7 +17,7 @@ CREATE TABLE `category_tbl` (
   UNIQUE KEY `category_tbl_uniqName` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
+    
 CREATE TABLE `member_tbl` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `loginId` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,

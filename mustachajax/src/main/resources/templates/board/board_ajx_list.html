@@ -6,13 +6,21 @@
     <link href="/mazer/assets/compiled/css/app.css" rel="stylesheet">
     <link href="/mazer/assets/compiled/css/app-dark.css" rel="stylesheet">
     <link href="/mazer/assets/compiled/css/iconly.css" rel="stylesheet">
-    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
+<!--    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>-->
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- include summernote css/js -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+
     <style>
         .itemRow {
-            display: flex;
-            justify-content: space-between; /* 요소들 사이의 간격 자동 조정 */
+            width: fit-content;
         }
-
 
         .wrap {
             /* 전체 화면의 스타일 */
@@ -28,86 +36,85 @@
             margin: 20px auto;
         }
 
-         #modal_box_add, #modal_box_view {
-             width: 50%;
-             max-width: 600px;
-             padding: 20px;
-             background-color: #ffffff;
-             border-radius: 10px;
-             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-             display: flex;
-             flex-direction: column;
-             position: absolute;
-             top: 50%;
-             left: 50%;
-             transform: translate(-50%, -50%);
-             z-index: 999;
-         }
-
-        #modal_box_add h2, #modal_box_view h2 {
-            margin-bottom: 15px;
-            font-size: 24px;
-            color: #333;
+        #modal_box_add {
+            /* 모달 화면 안의 스타일, z-index: 값이 가장 크므로 화면의 상위에 표현된다.*/
+            width: 70%;
+            height: 850px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: azure;
+            display: flex;
+            flex-flow: column;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
         }
 
-        #modal_box_add label, #modal_box_view label {
-            display: block;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #555;
+        #modal_box_view {
+            /* 모달 화면 안의 스타일, z-index: 값이 가장 크므로 화면의 상위에 표현된다.*/
+            width: 70%;
+            height: 850px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: azure;
+            display: flex;
+            flex-flow: column;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
         }
 
-        #modal_box_add input, #modal_box_view input,
-        #modal_box_add textarea, #modal_box_view textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            font-family: 'Arial', sans-serif;
-        }
-
-        #modal_box_add textarea, #modal_box_view textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        #modal_box_add button, #modal_box_view button {
+        #modal_box_add button {
             width: 100px;
-            height: 35px;
-            margin-top: 15px;
+            height: 30px;
             border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
+            margin-top: 10px;
+            align-self: center;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #modal_box_add button:hover, #modal_box_view button:hover {
-            background-color: #0056b3;
-        }
-
-        .modalCloseButton {
-            background-color: #6c757d;
-        }
-
-        .modalCloseButton:hover {
-            background-color: #5a6268;
         }
 
         .modal_bg {
-            position: fixed;
+            /* 모달 화면이 나타나면 화면 안의 내용 div id="content" 를 어둡게 만든다.
+                z-index 값을 content 보다 크므로 마우스 클릭시 modal_bg 에 클릭이 된다.
+             */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 99;
         }
-    </style>
 
+        .file_list {
+            height: 200px;
+            width: 400px;
+            overflow: auto;
+            border: 1px solid #989898;
+            padding: 10px;
+        }
+
+        .file_list .filebox p {
+            font-size: 14px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .file_list .filebox .delete i {
+            color: #ff5353;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .modal-backdrop {
+            z-index: 101 !important;
+        }
+    </style>
     <script>
         let page = 0;
         let total = 0;
@@ -138,7 +145,7 @@
 
             $("#searchName").on("keyup", function (key) {
                 // id="searchName" 요소의 키보드 업 이벤트발생 시 실행한다.
-                if(key.keyCode === 13) {
+                if (key.keyCode === 13) {
                     // key 매개변수 keyCode 에서 업 이벤트 발생한 키보드 키
                     $.searchItemList(1);
                 }
@@ -160,12 +167,27 @@
                 $('#modal_box_view').fadeIn(1000);
                 $('.modal_bg').fadeIn(1000);
             });
+
             $('.modalCloseButton').click(function () {
                 // id="modal_box_add", id="modal_box_view" 요소와 class="modal_bg" 요소를 서서히 감춘다.
                 $('#modal_box_add').fadeOut();
                 $('#modal_box_view').fadeOut();
                 $('.modal_bg').fadeOut();
             });
+
+            $("#content").on("drop", function(e){
+                for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                    uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i], $("#content")[0]);
+                }
+                e.preventDefault();
+            })
+
+            $("#content2").on("drop", function(e){
+                for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                    uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i], $("#content2")[0]);
+                }
+                e.preventDefault();
+            })
         });
 
         $.idAsc = function () {  // jQuery 함수 선언
@@ -316,7 +338,9 @@
             $("#id2").val(item.id);
             // id="id" 요소의 value 속성의 값을 item.id 로 설정한다.
             $("#name2").val(item.name);
-            $("#content2").val(item.content);
+            // $("#content2").val(item.content);
+            $("#content2").summernote("reset");
+            $("#content2").summernote("pasteHTML", item.content);
             $("#viewQty2").val(item.viewQty);
             $("#createName").text(item.createName);
             $("#createDt").text(item.createDt);
@@ -608,7 +632,8 @@
 
         $.addInsert = function () {
             let name = $("#name").val();
-            let content = $("#content").val();
+            // let content = $("#content").val();
+            let content = $("#content").summernote("code");
             if (!confirm(name + " 추가 하시겠습니까 ?")) {
                 return;
             }
@@ -661,11 +686,11 @@
             }
         }
 
-
         $.update = function () {
             let id = $("#id2").val();
             let name = $("#name2").val();
-            let content = $("#content2").val();
+            // let content = $("#content2").val();
+            let content = $("#content2").summernote("code");
             if (!confirm(name + " 수정 하시겠습니까 ?")) {
                 return;
             }
@@ -728,12 +753,13 @@
                 // if ( totPage < page ) {
                 //     page = totPage;
                 // }
-            }).fail(function(jqXHR, status, errorThrown) {
+            }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 alert("삭제를 실패했습니다. " + jqXHR.responseJSON.message);
             });
         }
-        $.doneDelete = function() {
+
+        $.doneDelete = function () {
             // searchName 으로 검색한 데이터 전체 행 수를 가져온다.
             let searchName = $("#searchName").val();
             $.ajax({
@@ -874,17 +900,17 @@
                         <button onclick="$.nameAsc();">△</button>
                         <button onclick="$.nameDesc();">▽</button>
                     </span>
-                <span> : </span>
-                <span>글쓴날짜
-                    <button onclick="$.createDtAsc();">△</button>
-                    <button onclick="$.createDtDesc();">▽</button>
-                </span>
-                <span> : </span>
-                <span>글쓴이
-                    <button onclick="$.createIdAsc();">△</button>
-                    <button onclick="$.createIdDesc();">▽</button>
-                </span>
-                <span>
+                    <span> : </span>
+                    <span>글쓴날짜
+                        <button onclick="$.createDtAsc();">△</button>
+                        <button onclick="$.createDtDesc();">▽</button>
+                    </span>
+                    <span> : </span>
+                    <span>글쓴이
+                        <button onclick="$.createIdAsc();">△</button>
+                        <button onclick="$.createIdDesc();">▽</button>
+                    </span>
+                    <span>
                         <label for="rowsOnePage">Row</label>
                         <select id="rowsOnePage">
                             <option value="5">5</option>
@@ -990,3 +1016,69 @@
 </div>
 </body>
 </html>
+<script>
+    function uploadSummernoteImageFile(file, editor) {
+        console.log(file);
+        let data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            data : data,
+            type : "POST",
+            url : "/api/v1/sbfile/uploadSummernoteImageFile",
+            contentType : false,
+            processData : false,
+            success : function(data) {
+                //항상 업로드된 파일의 url이 있어야 한다.
+                $(editor).summernote("insertImage", data.responseData);
+            }
+        });
+    }
+
+    let summerConfig = {
+        // 에디터 크기 설정
+        height: 400,
+        // 에디터 한글 설정
+        lang: 'ko-KR',
+        // 에디터에 커서 이동 (input창의 autofocus라고 생각하시면 됩니다.)
+        toolbar: [
+            // 글자 크기 설정
+            ['fontsize', ['fontsize']],
+            // 글자 [굵게, 기울임, 밑줄, 취소 선, 지우기]
+            ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+            // 글자색 설정
+            ['color', ['color']],
+            // 표 만들기
+            ['table', ['table']],
+            // 서식 [글머리 기호, 번호매기기, 문단정렬]
+            ['para', ['ul', 'ol', 'paragraph']],
+            // 줄간격 설정
+            ['height', ['height']],
+            // 이미지 첨부
+            ['insert',['picture']]
+        ],
+        // 추가한 글꼴
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
+        // 추가한 폰트사이즈
+        fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72','96'],
+        // focus는 작성 페이지 접속시 에디터에 커서를 위치하도록 하려면 설정해주세요.
+        focus : true,
+        // callbacks은 이미지 업로드 처리입니다.
+        callbacks : {
+            onImageUpload : function(files) {
+                uploadSummernoteImageFile(files[0], this);
+            },
+            onPaste: function (e) {
+                let clipboardData = e.originalEvent.clipboardData;
+                if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                    let item = clipboardData.items[0];
+                    if (item.kind === "file" && item.type.indexOf("image/") !== -1) {
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+    };
+
+    $("#content").summernote(summerConfig);
+    $("#content2").summernote(summerConfig);
+</script>
