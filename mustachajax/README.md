@@ -148,4 +148,51 @@ CREATE TABLE `board_comment_tbl` (
   CONSTRAINT `board_comment_tbl_member_tbl_deleteId` FOREIGN KEY (`deleteId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `board_comment_tbl_member_tbl_updateId` FOREIGN KEY (`updateId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+//로그인하지 않은 유저들도 사용 가능한 채팅방
+CREATE TABLE `stompevery_room` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `roomName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `deleteFlag` tinyint(1) DEFAULT '0',
+  `count` int DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `stompevery_chat` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `roomId` bigint unsigned NOT NULL,
+  `writer` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `msgTime` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `message` varchar(1000) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `stompevery_chat_FK_roomId` (`roomId`),
+  CONSTRAINT `stompevery_chat_FK_roomId` FOREIGN KEY (`roomId`) REFERENCES `stompevery_room` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+//로그인한 유저들이 사용하는 채팅방
+
+CREATE TABLE `stomplogin_room` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `roomName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `deleteFlag` tinyint(1) DEFAULT '0',
+  `count` int DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `stomplogin_chat` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `roomId` bigint unsigned NOT NULL,
+  `writerId` bigint unsigned NOT NULL,
+  `msgTime` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `message` varchar(1000) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `stompevery_chat_FK_roomId` (`roomId`),
+  CONSTRAINT `stomplogin_chat_FK_roomId` FOREIGN KEY (`roomId`) REFERENCES `stomplogin_room` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `stomplogin_chat_FK_writerId` FOREIGN KEY (`writerId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```
